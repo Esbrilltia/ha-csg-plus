@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "ledger_revision": "B1-implemented-pending-review",
+  "ledger_revision": "B2-implemented-pending-review",
   "document_kind": "implementation-overlay-pending-independent-review",
   "baseline": {
     "commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
@@ -2908,8 +2908,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "b299ba8c5951c26c1c0d21fa4a14ac2cec08ff2e",
         "pull_request": null
       },
       "acceptance": {
@@ -2919,7 +2919,24 @@
           "Setup failure classification and load/forward/partial-forward/retry cleanup retain physical writer ownership and entry isolation.",
           "Cancellation, pending writes and cleanup errors cannot permit a new writer to overtake an old writer."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G3-root-final.json",
+            "sha256": "777de239186dd620d73d74f14a6339dc5b291cb34d6817239e7cb31f2be50ec7"
+          },
+          {
+            "ref": "G3/setup-handoff-index.json",
+            "sha256": "b87de0fa8cc04c5ee2d81e35fdc0cd0de1cab340f2704bf9cee87cfb1aeb112d"
+          },
+          {
+            "ref": "G3/schema-focused.log",
+            "sha256": "406beed0730fe0b94d5de982f9a32b2d7208f3ffd9b96d862688ea0beffa7fb8"
+          },
+          {
+            "ref": "G3/entity-add-engineering-review.md",
+            "sha256": "66b2d0e6016788195cf93ee1ae3dd6d39e1d34b409e01cd26f8ba99d9f468813"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -2979,7 +2996,7 @@
       "tracking_group": "A2",
       "implementation": {
         "status": "IMPLEMENTED_PENDING_REVIEW",
-        "candidate_commit": "f2a0150e8a8dd6f47a65b0b5ccd2ac3c8106dd0f",
+        "candidate_commit": "b299ba8c5951c26c1c0d21fa4a14ac2cec08ff2e",
         "pull_request": null
       },
       "acceptance": {
@@ -3009,6 +3026,22 @@
           {
             "ref": "G2/candidate-evidence-results.json",
             "sha256": "6401a1a5e4b13c3ee9cbf6e9ef4f5c0766923384ff1b32adbcdaa911a5c04a99"
+          },
+          {
+            "ref": "G3-root-final.json",
+            "sha256": "777de239186dd620d73d74f14a6339dc5b291cb34d6817239e7cb31f2be50ec7"
+          },
+          {
+            "ref": "G3/setup-handoff-index.json",
+            "sha256": "b87de0fa8cc04c5ee2d81e35fdc0cd0de1cab340f2704bf9cee87cfb1aeb112d"
+          },
+          {
+            "ref": "G3/schema-focused.log",
+            "sha256": "406beed0730fe0b94d5de982f9a32b2d7208f3ffd9b96d862688ea0beffa7fb8"
+          },
+          {
+            "ref": "G3/entity-add-engineering-review.md",
+            "sha256": "66b2d0e6016788195cf93ee1ae3dd6d39e1d34b409e01cd26f8ba99d9f468813"
           }
         ]
       },
@@ -3144,8 +3177,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "b299ba8c5951c26c1c0d21fa4a14ac2cec08ff2e",
         "pull_request": null
       },
       "acceptance": {
@@ -3156,7 +3189,24 @@
           "Cancellation, pending writes and cleanup errors cannot permit a new writer to overtake an old writer.",
           "Arbitrary external same-key instances and universal host power-loss behavior remain outside this certification."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G3-root-final.json",
+            "sha256": "777de239186dd620d73d74f14a6339dc5b291cb34d6817239e7cb31f2be50ec7"
+          },
+          {
+            "ref": "G3/setup-handoff-index.json",
+            "sha256": "b87de0fa8cc04c5ee2d81e35fdc0cd0de1cab340f2704bf9cee87cfb1aeb112d"
+          },
+          {
+            "ref": "G3/schema-focused.log",
+            "sha256": "406beed0730fe0b94d5de982f9a32b2d7208f3ffd9b96d862688ea0beffa7fb8"
+          },
+          {
+            "ref": "G3/entity-add-engineering-review.md",
+            "sha256": "66b2d0e6016788195cf93ee1ae3dd6d39e1d34b409e01cd26f8ba99d9f468813"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -3422,8 +3472,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "b299ba8c5951c26c1c0d21fa4a14ac2cec08ff2e",
         "pull_request": null
       },
       "acceptance": {
@@ -3433,7 +3483,24 @@
           "Setup failure classification and load/forward/partial-forward/retry cleanup retain physical writer ownership and entry isolation.",
           "Cancellation, pending writes and cleanup errors cannot permit a new writer to overtake an old writer."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G3-root-final.json",
+            "sha256": "777de239186dd620d73d74f14a6339dc5b291cb34d6817239e7cb31f2be50ec7"
+          },
+          {
+            "ref": "G3/setup-handoff-index.json",
+            "sha256": "b87de0fa8cc04c5ee2d81e35fdc0cd0de1cab340f2704bf9cee87cfb1aeb112d"
+          },
+          {
+            "ref": "G3/schema-focused.log",
+            "sha256": "406beed0730fe0b94d5de982f9a32b2d7208f3ffd9b96d862688ea0beffa7fb8"
+          },
+          {
+            "ref": "G3/entity-add-engineering-review.md",
+            "sha256": "66b2d0e6016788195cf93ee1ae3dd6d39e1d34b409e01cd26f8ba99d9f468813"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
