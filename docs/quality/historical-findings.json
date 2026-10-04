@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "ledger_revision": "G0-initial",
+  "ledger_revision": "A1-implemented-pending-review",
   "document_kind": "implementation-overlay-pending-independent-review",
   "baseline": {
     "commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
@@ -787,8 +787,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "59ed34b8cbf72f095bcbc84a8ad208bbf780309c",
         "pull_request": null
       },
       "acceptance": {
@@ -798,7 +798,24 @@
           "Fixed-Core lifecycle evaluation with valid, zero and unavailable states emits no sensor metadata warnings.",
           "Temporary Recorder proves no new snapshot statistics, retained old statistics and unchanged external energy/cost contracts."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G1-root.json",
+            "sha256": "8898ec65eecdeb3d02e5d052ca9551fbcbc8bbacc12f30e95918bfc088883d37"
+          },
+          {
+            "ref": "G1/lifecycle.json",
+            "sha256": "262391cc37d9c5f7a9bdce8408a8a950fd6fd536f44dacd2db5fabedc000952d"
+          },
+          {
+            "ref": "G1/clean-recorder.json",
+            "sha256": "33c56c329943fb8ad476ab17b5928c75fa8341df1330fc84b2e0954f039cc674"
+          },
+          {
+            "ref": "G1/synthetic-beta1-upgrade.json",
+            "sha256": "8c84578fc187439ecb803739b5ca4433a34b5efb85c2aba15f0ec2125466354f"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -5050,8 +5067,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "59ed34b8cbf72f095bcbc84a8ad208bbf780309c",
         "pull_request": null
       },
       "acceptance": {
@@ -5061,7 +5078,24 @@
           "Fixed-Core lifecycle evaluation with valid, zero and unavailable states emits no sensor metadata warnings.",
           "Temporary Recorder proves no new snapshot statistics, retained old statistics and unchanged external energy/cost contracts."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G1-root.json",
+            "sha256": "8898ec65eecdeb3d02e5d052ca9551fbcbc8bbacc12f30e95918bfc088883d37"
+          },
+          {
+            "ref": "G1/lifecycle.json",
+            "sha256": "262391cc37d9c5f7a9bdce8408a8a950fd6fd536f44dacd2db5fabedc000952d"
+          },
+          {
+            "ref": "G1/clean-recorder.json",
+            "sha256": "33c56c329943fb8ad476ab17b5928c75fa8341df1330fc84b2e0954f039cc674"
+          },
+          {
+            "ref": "G1/synthetic-beta1-upgrade.json",
+            "sha256": "8c84578fc187439ecb803739b5ca4433a34b5efb85c2aba15f0ec2125466354f"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
