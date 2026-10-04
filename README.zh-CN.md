@@ -4,7 +4,7 @@
 
 **CSG Plus**（项目名 `ha-csg-plus`）是适用于中国南方电网用电数据的独立
 Home Assistant 自定义集成。**Home Assistant domain：`csg_plus`。**
-本轮候选版本为 **`3.0.0-beta.1`**。
+当前源码版本：**`3.0.0-beta.1`**。
 
 本项目基于 [orangeboyChen/ha-csg](https://github.com/orangeboyChen/ha-csg) 与
 [CubicPill/china_southern_power_grid_stat](https://github.com/CubicPill/china_southern_power_grid_stat)。
@@ -189,14 +189,15 @@ kWh，HistoryStore 不将其保存为 fact；无效昨日读数保持 unavailabl
 HACS metadata 的最低 HA 版本也为 **`2026.9.3`**。其他 Core 版本未经测试，
 不宣称更广兼容范围。
 
-独立版本发布后，在 [HACS](https://hacs.xyz/) 中添加此仓库为 **Integration** 类别的
-自定义仓库，安装 **CSG Statistics Plus** 并重启 Home Assistant。
+Beta 版本通过 GitHub prerelease 发布。可在 [HACS](https://hacs.xyz/) 中将本仓库添加为
+**Integration** 类型的自定义仓库；有 prerelease 可用时，启用该仓库的
+Beta / prerelease 版本后即可选择相应版本。安装 **CSG Statistics Plus** 并重启 Home Assistant。
 安装包只包含一个集成：`custom_components/csg_plus`。
 
 当前 canonical 仓库为
 [Esbrilltia/ha-csg-plus](https://github.com/Esbrilltia/ha-csg-plus/)，
 [问题反馈入口](https://github.com/Esbrilltia/ha-csg-plus/issues) 已使用当前仓库地址。
-仓库重命名已完成。候选版本 `3.0.0-beta.1` 尚未创建 tag、release 或发布 HACS beta。
+仓库重命名已完成。
 
 ## 从上游 csg 迁移
 
