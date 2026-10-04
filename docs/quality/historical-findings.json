@@ -1,0 +1,5498 @@
+{
+  "schema_version": 1,
+  "ledger_revision": "G0-initial",
+  "document_kind": "implementation-overlay-pending-independent-review",
+  "baseline": {
+    "commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+    "tree": "71d681b8a350b8f33c21d5867e8e17289da6131f",
+    "input_ledger_sha256": "d0468896ccc6188e1ae5d2fcde8cd396a52868abc191a57e311139ed09bcde18",
+    "source_record_count": 77,
+    "active_source_record_count": 25
+  },
+  "classification_rule": "Historical classifications apply to beta1 only. Implementation is not independent closure. Set completeness does not mean no remaining risk.",
+  "sources": [
+    {
+      "report_id": "BETA1-HISTORICAL",
+      "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+    },
+    {
+      "report_id": "R1",
+      "sha256": "926f56d06df3ddb4b0328daafdf2b096fe9a827d1d6d8c827b2d55d032d27cf1"
+    },
+    {
+      "report_id": "R2",
+      "sha256": "b5c768cc8e3a68160bc2074a2a13f1442171250c717b006267441d43d9f4c7fc"
+    },
+    {
+      "report_id": "BASE",
+      "sha256": "1571bf993ac641519baf23da280960a292843154afcd531b88271a7aa6b94e29"
+    },
+    {
+      "report_id": "M0",
+      "sha256": "ad49da5a17f25ab75fa3626be4b53aadf9ed8dab7538577586546f1eecfb2e5a"
+    },
+    {
+      "report_id": "M1",
+      "sha256": "6726d6e000f783fc10702722d4fc10e047dc1b7df60a368435508a1a8ce62a18"
+    },
+    {
+      "report_id": "M1R",
+      "sha256": "63566ad8e234bc501d8078207c8a39afd21db6e8ce039c7ab75e47300388496e"
+    },
+    {
+      "report_id": "M2",
+      "sha256": "62471f9800c717571fa6703c00a44dae630eac70fa14fe5f5d972b8f57e5a8ab"
+    },
+    {
+      "report_id": "M2R",
+      "sha256": "f52add9e916e5806e9d7243c2039c97ff621a3f71f1ba994238996c961131e03"
+    },
+    {
+      "report_id": "M3",
+      "sha256": "8f530b76356c4b9b4b793f217d5a6805a93f5562196be0872a816420486d45ea"
+    },
+    {
+      "report_id": "M3R",
+      "sha256": "56dc253b20e07ac79ba1445638cd36b769ad519f47d888ee715886b48229acf6"
+    },
+    {
+      "report_id": "M4",
+      "sha256": "7ca39176ad6c3b8455b88f24ee68c051c735400c60f9462e2a8389e930a4bca1"
+    },
+    {
+      "report_id": "M4R1",
+      "sha256": "884664f0de38834c7c3951f0085b0b3418368efa0d019798e25790c166312abe"
+    },
+    {
+      "report_id": "M4R2",
+      "sha256": "45ce964e5623606ded1c0b82281e6d7d25bc25424d0eea9f3701b5a184b30454"
+    },
+    {
+      "report_id": "M4R3",
+      "sha256": "b246fb7faf3b02e99c8cdaaebc87acaa9c019e104f532fda0d2aacad3b172867"
+    },
+    {
+      "report_id": "M5",
+      "sha256": "76b09ff2c637a851250e0f8d7f72fde8fb6d172a5c7fa5395c993b85dba9fec1"
+    },
+    {
+      "report_id": "M6",
+      "sha256": "97c56065b5ebfee65f31943b693679c2aa7b465d61d814173c6b8568f2e56e61"
+    },
+    {
+      "report_id": "M6R",
+      "sha256": "91188030aa426b8eca294e64f0b2666d00ce10640d429f3bfda552836150d9c8"
+    },
+    {
+      "report_id": "M7",
+      "sha256": "bae6124fb7ebec039c1cb357fb576477fff3dbc10f34e38023625085c2de5e1f"
+    },
+    {
+      "report_id": "M7R",
+      "sha256": "d8cc9dedf91a7199e73315e6b6568881067972eaf1adb6d872cce9b93e19e80f"
+    },
+    {
+      "report_id": "P10",
+      "sha256": "318ac1c5bcaf641701216349be52db406fb5f9fc0bb8f690d718cb3d9dfbc2ec"
+    },
+    {
+      "report_id": "P10R",
+      "sha256": "3fe0f7bca3234421ff21805aba8576ad4bf2aeaa6d02c9b2866851a8b33b0369"
+    },
+    {
+      "report_id": "P11",
+      "sha256": "37639b79aee4d6afd4b2b1ebbd471c3ceb75d7f62c2ef824be168e164555db5a"
+    },
+    {
+      "report_id": "P12",
+      "sha256": "bd947be757c1f989cab7e5647e40d5dbd9e886c9350ecaded2dd50bfcb3c00d1"
+    },
+    {
+      "report_id": "BG0",
+      "sha256": "f0b58712230856dacbb1adc54049cd57ee43dd399a93fc84b261e61060a204be"
+    },
+    {
+      "report_id": "BG",
+      "sha256": "15b95780270fe9ef3b53d3a1a751b4cc2a363bc78161a3298763ef9692d665a7"
+    },
+    {
+      "report_id": "RULE",
+      "sha256": "e58304068f408ee47cfced59ab94648eaed5da5c9a4988debb179aae8d38961b"
+    },
+    {
+      "report_id": "HAND1",
+      "sha256": "fc11853c226cee1948ee2daeb0baa8d98a19f667e25b54516c3ea4e81fd97076"
+    },
+    {
+      "report_id": "FLOW",
+      "sha256": "608af84dc4f2e1c5fcd8297b8b50365cbaa176e23e2ad379ce54283e2ebaeed1"
+    },
+    {
+      "report_id": "HAND7",
+      "sha256": "87f8f323881fcb4b2cb1d08bb82e96b05471dc2e1b9119667d4f9ec93409fc15"
+    },
+    {
+      "report_id": "TASK7",
+      "sha256": "459c440a54ddb2a8d7fa9993f63531b95a3e8d0436eab30695ec86f9605d08eb"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "R1-A1",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "a5be58dfbab2da3cd89563021eb51ba6dc7ef4c9"
+        ],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former import failure has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-A2",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former cumulative revision path has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-A3",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former initial-value and billing-order path has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-A4",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former interpolation and correction path has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-A5",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former correction acknowledgement path has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-A6",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "a5be58dfbab2da3cd89563021eb51ba6dc7ef4c9"
+        ],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The earlier yesterday rollover defect has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-B1",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "B",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former latest-only cumulative path has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-B2",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "B",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [
+          "5130ca1b5d954b121bbd4b46fb64c66f79856c09",
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          3,
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B1",
+      "risk_summary": "Response validation and display candidate selection remain incomplete.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B1"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Raw synthetic client responses enforce structure, finite field-specific numbers and Shanghai request/date bounds.",
+          "Same-batch conflicting daily/monthly candidates cannot win by ordering; valid zero and coverage markers survive.",
+          "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
+          "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-B3",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "B",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The earlier tier coverage and numeric boundary defect has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-B4",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "B",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "A1",
+      "risk_summary": "Fourteen display snapshots declare incompatible statistics metadata.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "A1"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Independently declare all 16 entity purposes and preserve units, device classes and identities.",
+          "Remove state_class from the 14 display snapshots; keep the documented tariff measurement contract.",
+          "Fixed-Core lifecycle evaluation with valid, zero and unavailable states emits no sensor metadata warnings.",
+          "Temporary Recorder proves no new snapshot statistics, retained old statistics and unchanged external energy/cost contracts."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-B5",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "B",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former cumulative daily-cost entity has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-B6",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "B",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former correction timezone path has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-C1",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "C",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The obsolete billing tuple placeholder has been removed.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-C2",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "C",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former daily merge helper has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-C3",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "C",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former correction queue has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R1-C4",
+      "related_findings": [],
+      "source_report_id": "R1",
+      "original_severity": "C",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "C_DEFERRED",
+      "risk_summary": "A scheduling comment remains inaccurate; cleanup is deferred.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the finding and its historical evidence; perform equivalent regressions when a changed path overlaps.",
+          "Keep comment cleanup outside this implementation and request a later disposition before release."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-P1",
+      "related_findings": [
+        "R1-A5"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "A second report tracks the retired correction retry path.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-P2",
+      "related_findings": [
+        "R1-A3"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "A second report tracks the retired billing initialization path.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-P3",
+      "related_findings": [
+        "R1-A4"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "A second report tracks the retired interpolation correction path.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-P4",
+      "related_findings": [
+        "R1-A5"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "A second report tracks the retired missing-bucket correction path.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-B1",
+      "related_findings": [],
+      "source_report_id": "R2",
+      "original_severity": "B",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former correction unit comparison has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-B2",
+      "related_findings": [],
+      "source_report_id": "R2",
+      "original_severity": "B",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former queue-empty correction acknowledgement has been retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-B3",
+      "related_findings": [],
+      "source_report_id": "R2",
+      "original_severity": "B/已接受粒度",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "RETAINED_DESIGN_BOUNDARY",
+      "risk_summary": "Yesterday rollover retains the documented timer granularity.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Preserve the existing yesterday guard contract and its documented timer boundary.",
+          "Keep the remaining timing risk explicit at release review; do not claim second-level rollover."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-B4",
+      "related_findings": [
+        "R1-B2"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "B/验证边界",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B1",
+      "risk_summary": "Synthetic client coverage does not establish every real server response.",
+      "disposition": "APPROVED_PARTIAL_REMEDIATION_WITH_RETAINED_BOUNDARY",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B1"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Raw synthetic client responses enforce structure, finite field-specific numbers and Shanghai request/date bounds.",
+          "Same-batch conflicting daily/monthly candidates cannot win by ordering; valid zero and coverage markers survive.",
+          "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
+          "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact.",
+          "Synthetic coverage must remain distinct from unknown real server behavior."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-C1",
+      "related_findings": [
+        "R1-C1"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "C/清理边界",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "A second report tracks removal of the billing placeholder.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-C2",
+      "related_findings": [
+        "R1-C4"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "C/清理边界",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "A second report tracks retirement of an unused ledger method.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-C3",
+      "related_findings": [
+        "R1-C4"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "C/清理边界",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "C_DEFERRED",
+      "risk_summary": "A second report tracks deferred scheduling comment cleanup.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the related R1-C4 record and preserve behavior on any overlapping path.",
+          "Do not treat deferred comment cleanup as independently closed."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "R2-C5",
+      "related_findings": [
+        "R1-B5"
+      ],
+      "source_report_id": "R2",
+      "original_severity": "C/清理边界",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Legacy cost data was retained when the old path was retired.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M0-B1",
+      "related_findings": [
+        "R1-B2"
+      ],
+      "source_report_id": "M0",
+      "original_severity": "B",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B1",
+      "risk_summary": "Earlier narrow numeric fixes did not complete response and date validation.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B1"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Raw synthetic client responses enforce structure, finite field-specific numbers and Shanghai request/date bounds.",
+          "Same-batch conflicting daily/monthly candidates cannot win by ordering; valid zero and coverage markers survive.",
+          "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
+          "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M0-B2",
+      "related_findings": [],
+      "source_report_id": "M0",
+      "original_severity": "B",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Boolean daily values have a historical rejection fix.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M0-B3",
+      "related_findings": [],
+      "source_report_id": "M0",
+      "original_severity": "B/覆盖边界",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former in-memory ledger harness is no longer the production path.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M0-B4",
+      "related_findings": [],
+      "source_report_id": "M0",
+      "original_severity": "B/覆盖边界",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former recorder harness has been superseded by later lifecycle evidence.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M0-B5",
+      "related_findings": [],
+      "source_report_id": "M0",
+      "original_severity": "B/测试治理",
+      "beta1_classification": "NOT APPLICABLE",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "NOT APPLICABLE",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The specific legacy expected-failure tests no longer apply.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M0-B6",
+      "related_findings": [],
+      "source_report_id": "M0",
+      "original_severity": "B/测试质量",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B1",
+      "risk_summary": "A numeric regression case needs a more discriminating assertion.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B1"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Raw synthetic client responses enforce structure, finite field-specific numbers and Shanghai request/date bounds.",
+          "Same-batch conflicting daily/monthly candidates cannot win by ordering; valid zero and coverage markers survive.",
+          "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
+          "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M0-B7",
+      "related_findings": [
+        "R1-A3",
+        "R1-A4",
+        "R1-A5"
+      ],
+      "source_report_id": "M0",
+      "original_severity": "B/继承A",
+      "beta1_classification": "SUPERSEDED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "SUPERSEDED",
+        "commits": [
+          "a08a5f1633367197acda5fec6d3b6feb53b0edc5"
+        ],
+        "pull_requests": [
+          7
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "This report tracks retirement of the three old cumulative defects.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M1-A1",
+      "related_findings": [],
+      "source_report_id": "M1",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "cd812967c80808b628e5edc98b780445db2f2c93",
+          "ad52af28eade6a908be4bd66a563c88b9cb131ad"
+        ],
+        "pull_requests": [
+          2
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Same-value persistence retry has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M1-A2",
+      "related_findings": [],
+      "source_report_id": "M1",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "cd812967c80808b628e5edc98b780445db2f2c93",
+          "ad52af28eade6a908be4bd66a563c88b9cb131ad"
+        ],
+        "pull_requests": [
+          2
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Fact candidate conflict ordering has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M1-B1",
+      "related_findings": [],
+      "source_report_id": "M1",
+      "original_severity": "B",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "cd812967c80808b628e5edc98b780445db2f2c93",
+          "ad52af28eade6a908be4bd66a563c88b9cb131ad"
+        ],
+        "pull_requests": [
+          2
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Reconciliation tolerance comparison has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M1-B2",
+      "related_findings": [],
+      "source_report_id": "M1",
+      "original_severity": "B",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B2",
+      "risk_summary": "Stored business payloads need validation before runtime publication.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B2"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Real Store rejects invalid known business payloads before publication without changing original bytes, mtime or saving over them.",
+          "Legal beta1 sparse containers, partial monthly facts, zero values, timestamps and progress compatibility reload unchanged.",
+          "Setup failure classification and load/forward/partial-forward/retry cleanup retain physical writer ownership and entry isolation.",
+          "Cancellation, pending writes and cleanup errors cannot permit a new writer to overtake an old writer."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M1-B3",
+      "related_findings": [],
+      "source_report_id": "M1",
+      "original_severity": "B",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B1/B2",
+      "risk_summary": "Internal input types, numeric overflow and calendar bounds need guards.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B2",
+        "B1"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Real Store rejects invalid known business payloads before publication without changing original bytes, mtime or saving over them.",
+          "Legal beta1 sparse containers, partial monthly facts, zero values, timestamps and progress compatibility reload unchanged.",
+          "Setup failure classification and load/forward/partial-forward/retry cleanup retain physical writer ownership and entry isolation.",
+          "Cancellation, pending writes and cleanup errors cannot permit a new writer to overtake an old writer.",
+          "Raw synthetic client responses enforce structure, finite field-specific numbers and Shanghai request/date bounds.",
+          "Same-batch conflicting daily/monthly candidates cannot win by ordering; valid zero and coverage markers survive.",
+          "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
+          "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M1-B4",
+      "related_findings": [],
+      "source_report_id": "M1",
+      "original_severity": "B/接口边界",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B3",
+      "risk_summary": "Reconciliation needs to identify whether its result applies to current facts.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B3"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "A consumer can distinguish the last reconciliation from a result applicable to current facts.",
+          "Daily or monthly revisions invalidate freshness; unchanged refetch, save failure/retry and reload preserve the declared contract.",
+          "Partial success, cross-day and later revisions never make checked_at stand for complete source synchronization.",
+          "Tolerance, existing comparison statuses, fact values and independent Bridge materialization remain unchanged."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M1-B5",
+      "related_findings": [],
+      "source_report_id": "M1",
+      "original_severity": "B/覆盖边界",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [
+          "cd812967c80808b628e5edc98b780445db2f2c93",
+          "ad52af28eade6a908be4bd66a563c88b9cb131ad",
+          "2d31973498433e7a6f2a7b8b09a9139021332757"
+        ],
+        "pull_requests": [
+          2,
+          5
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B2",
+      "risk_summary": "Production lifecycle coverage is distinct from arbitrary same-key writers.",
+      "disposition": "APPROVED_PARTIAL_REMEDIATION_WITH_RETAINED_BOUNDARY",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B2"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Real Store rejects invalid known business payloads before publication without changing original bytes, mtime or saving over them.",
+          "Legal beta1 sparse containers, partial monthly facts, zero values, timestamps and progress compatibility reload unchanged.",
+          "Setup failure classification and load/forward/partial-forward/retry cleanup retain physical writer ownership and entry isolation.",
+          "Cancellation, pending writes and cleanup errors cannot permit a new writer to overtake an old writer.",
+          "Arbitrary external same-key instances and universal host power-loss behavior remain outside this certification."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M1-B6",
+      "related_findings": [],
+      "source_report_id": "M1",
+      "original_severity": "B/环境边界",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "157eebdf14364028ff755569f704e02524269d9d"
+        ],
+        "pull_requests": [
+          6
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former test environment has been replaced; real deployment remains separate.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M2-A1",
+      "related_findings": [],
+      "source_report_id": "M2",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "3fe5e1901728e285cb7ed377938420f999ab35b3",
+          "b0a4f01c3a70ca98a39c01d6345d65dcbc758b5a"
+        ],
+        "pull_requests": [
+          4
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Fact-level conflicting monthly candidates have a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M2-B1",
+      "related_findings": [],
+      "source_report_id": "M2",
+      "original_severity": "B",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "1b2599153fd736266ac68ef580b4f28fabd36a08"
+        ],
+        "pull_requests": [
+          5
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Fact-level requested-year validation has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M2-B2",
+      "related_findings": [],
+      "source_report_id": "M2",
+      "original_severity": "B",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B2",
+      "risk_summary": "Setup failures need classification and entry resource cleanup.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B2"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Real Store rejects invalid known business payloads before publication without changing original bytes, mtime or saving over them.",
+          "Legal beta1 sparse containers, partial monthly facts, zero values, timestamps and progress compatibility reload unchanged.",
+          "Setup failure classification and load/forward/partial-forward/retry cleanup retain physical writer ownership and entry isolation.",
+          "Cancellation, pending writes and cleanup errors cannot permit a new writer to overtake an old writer."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M2-B3",
+      "related_findings": [
+        "R1-B2"
+      ],
+      "source_report_id": "M2",
+      "original_severity": "B",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B1",
+      "risk_summary": "Raw malformed responses must follow the same input contract as consumers.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B1"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Raw synthetic client responses enforce structure, finite field-specific numbers and Shanghai request/date bounds.",
+          "Same-batch conflicting daily/monthly candidates cannot win by ordering; valid zero and coverage markers survive.",
+          "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
+          "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M2-B4",
+      "related_findings": [
+        "M1-B4"
+      ],
+      "source_report_id": "M2",
+      "original_severity": "B",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "B3",
+      "risk_summary": "Partial ingestion or reconcile failures can leave an older result visible.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "B3"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "A consumer can distinguish the last reconciliation from a result applicable to current facts.",
+          "Daily or monthly revisions invalidate freshness; unchanged refetch, save failure/retry and reload preserve the declared contract.",
+          "Partial success, cross-day and later revisions never make checked_at stand for complete source synchronization.",
+          "Tolerance, existing comparison statuses, fact values and independent Bridge materialization remain unchanged."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M2-B5",
+      "related_findings": [
+        "M3-B1"
+      ],
+      "source_report_id": "M2",
+      "original_severity": "B",
+      "beta1_classification": "PARTIALLY CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "PARTIALLY CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "C_DEFERRED",
+      "risk_summary": "Full-payload persistence cost remains a deferred scale concern.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Preserve persistence and same-value retry behavior; B2 diagnostics do not close the scale concern.",
+          "Require later measured scale/latency evidence and an explicit release disposition."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M2-B6",
+      "related_findings": [
+        "M1-B6"
+      ],
+      "source_report_id": "M2",
+      "original_severity": "B/环境边界",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "157eebdf14364028ff755569f704e02524269d9d"
+        ],
+        "pull_requests": [
+          6
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The former adapter environment does not substitute for real deployment.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M3-A1",
+      "related_findings": [],
+      "source_report_id": "M3",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "2d31973498433e7a6f2a7b8b09a9139021332757"
+        ],
+        "pull_requests": [
+          5
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Physical disk writer ownership has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M3-A2",
+      "related_findings": [],
+      "source_report_id": "M3",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "2d31973498433e7a6f2a7b8b09a9139021332757"
+        ],
+        "pull_requests": [
+          5
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Progress normalization and failed-task harvesting have a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M3-B1",
+      "related_findings": [],
+      "source_report_id": "M3",
+      "original_severity": "B",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "C_DEFERRED",
+      "risk_summary": "Event-loop serialization latency has not been measured at scale.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Keep event-loop serialization risk explicit without an unmeasured performance claim.",
+          "Require later payload-size/latency evidence and a separate authorized optimization scope."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M3-B2",
+      "related_findings": [],
+      "source_report_id": "M3",
+      "original_severity": "B",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Direct account identifiers in operational logs have a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M3R-B1",
+      "related_findings": [],
+      "source_report_id": "M3R",
+      "original_severity": "B/明确代价",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "RETAINED_DESIGN_BOUNDARY",
+      "risk_summary": "A blocked physical write retains ownership until it ends.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Never release physical write ownership while its thread remains active.",
+          "Keep the permanent-block recovery limitation explicit during release review."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M3R-B2",
+      "related_findings": [],
+      "source_report_id": "M3R",
+      "original_severity": "B/明确代价",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "RETAINED_DESIGN_BOUNDARY",
+      "risk_summary": "Process exit may interrupt unconfirmed I/O; universal power-loss coverage is absent.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the unconfirmed I/O/process-exit recovery boundary and original confirmed-fact guarantees.",
+          "Do not expand limited process evidence into universal operating-system or power-loss certification."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M4-A1",
+      "related_findings": [],
+      "source_report_id": "M4",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "e1bc1c06f9120f61d99956472182c77b30d7597d",
+          "7df01cffcf552a550c6162676b2571d5cd6134c7",
+          "93ac55095aca2585e9f8e758d7667e7e6e10f2bb"
+        ],
+        "pull_requests": [
+          6
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Queued stale statistics import ownership has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M4-B1",
+      "related_findings": [],
+      "source_report_id": "M4",
+      "original_severity": "B",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "e1bc1c06f9120f61d99956472182c77b30d7597d",
+          "7df01cffcf552a550c6162676b2571d5cd6134c7",
+          "93ac55095aca2585e9f8e758d7667e7e6e10f2bb"
+        ],
+        "pull_requests": [
+          6
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Focused test import initialization has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M4-B2",
+      "related_findings": [],
+      "source_report_id": "M4",
+      "original_severity": "B",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "C_DEFERRED",
+      "risk_summary": "Additional sync requests remain; retry correctness must be preserved.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Preserve same-value persistence/materialization retries and existing ownership regressions.",
+          "Keep extra requests explicit; optimize only under a later measured scope."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M4-A2",
+      "related_findings": [],
+      "source_report_id": "M4R1",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "4a345937310849d51c3fa09eb2c5aa55b9f1f0b6",
+          "ac212eb5cceb8540fa14e011129590d18db19f62"
+        ],
+        "pull_requests": [
+          6
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Producer-tail convergence has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M4-B3",
+      "related_findings": [],
+      "source_report_id": "M4R1",
+      "original_severity": "B",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "C_DEFERRED",
+      "risk_summary": "Empty lanes can accumulate across distinct identities; cleanup is deferred.",
+      "disposition": "DEFERRED_OUT_OF_IMPLEMENTATION_SCOPE",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Preserve lane ownership and entry isolation without adding lane reclamation here.",
+          "Keep distinct-identity lane retention explicit for a later bounded optimization decision."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M4-A3",
+      "related_findings": [],
+      "source_report_id": "M4R2",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "ac212eb5cceb8540fa14e011129590d18db19f62"
+        ],
+        "pull_requests": [
+          6
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Recoverable unload after finalization failure has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M6-PRE-TOU",
+      "related_findings": [],
+      "source_report_id": "M6",
+      "original_severity": "P1",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Tariff policy calculation has a recorded closure; the first report is unavailable.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M6-PRE-TAIL",
+      "related_findings": [],
+      "source_report_id": "M6",
+      "original_severity": "P2",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Invalid-tail coverage has a recorded closure; the first report is unavailable.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M6-PRE-UTC",
+      "related_findings": [],
+      "source_report_id": "M6",
+      "original_severity": "P2",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "2a356f857993af1d8f60fe183955bc9b79430531",
+          "be0858ce9c3cd11e0e19b9ac23da2d80e138d4c4"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Monthly cost calendar anchoring has a recorded closure; the first report is unavailable.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M6-A1",
+      "related_findings": [],
+      "source_report_id": "M6",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "fbf84b98cf0bb3630ef95ddb2351d988ba7472b5"
+        ],
+        "pull_requests": [
+          8
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Same-value monthly cost materialization retry has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M6-B1",
+      "related_findings": [],
+      "source_report_id": "M6",
+      "original_severity": "B/兼容边界",
+      "beta1_classification": "NOT APPLICABLE",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "NOT APPLICABLE",
+        "commits": [
+          "b4e8ba70e16c2cf9ba72ae3b1712eafc00e1a7ab"
+        ],
+        "pull_requests": [
+          9
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Old experimental cost identities are outside the current production identity set.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M7-A1",
+      "related_findings": [],
+      "source_report_id": "M7",
+      "original_severity": "A",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "fe9084583957536a7f30196f948233c2b3f4c270"
+        ],
+        "pull_requests": [
+          9
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Reauthentication entry identity handling has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M7-B1",
+      "related_findings": [],
+      "source_report_id": "M7",
+      "original_severity": "B",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "5168c5bb054ef243339df13d390fdd30cb4e65a8"
+        ],
+        "pull_requests": [
+          9
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "Manifest ordering has a historical closure under the fixed local validator.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M7-B2",
+      "related_findings": [],
+      "source_report_id": "M7",
+      "original_severity": "B",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [
+          "cbd77b126397e311ec6debd427207c78775cabf4"
+        ],
+        "pull_requests": [
+          9
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The client demo's retired API recommendation has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "M7-U5",
+      "related_findings": [
+        "R1-B4"
+      ],
+      "source_report_id": "M7",
+      "original_severity": "未编号验证边界",
+      "beta1_classification": "STILL OPEN",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "STILL OPEN",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "A1",
+      "risk_summary": "A later report observed the same unresolved snapshot metadata warnings.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "A1"
+      ],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_STARTED",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Independently declare all 16 entity purposes and preserve units, device classes and identities.",
+          "Remove state_class from the 14 display snapshots; keep the documented tariff measurement contract.",
+          "Fixed-Core lifecycle evaluation with valid, zero and unavailable states emits no sensor metadata warnings.",
+          "Temporary Recorder proves no new snapshot statistics, retained old statistics and unchanged external energy/cost contracts."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "P10-A1",
+      "related_findings": [],
+      "source_report_id": "P10",
+      "original_severity": "A/发布入口",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [],
+        "pull_requests": [
+          10
+        ],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The published issue entry point has a historical repository-setting closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "GATE-U1",
+      "related_findings": [],
+      "source_report_id": "M7",
+      "original_severity": "未验证/发布边界",
+      "beta1_classification": "UNVERIFIED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "UNVERIFIED",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "VALIDATION_GATE",
+      "risk_summary": "Complete HACS and hassfest Actions remain unverified.",
+      "disposition": "RETAINED_VALIDATION_BOUNDARY",
+      "owner_role": "control-validation",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Report actual workflow execution state and retain NOT RUN/disabled_fork when applicable.",
+          "Keep the validation boundary UNVERIFIED; do not enable workflows or substitute local plugin results."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "GATE-U2",
+      "related_findings": [],
+      "source_report_id": "M7",
+      "original_severity": "未验证/云端共存",
+      "beta1_classification": "UNVERIFIED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "UNVERIFIED",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "VALIDATION_GATE",
+      "risk_summary": "Real parallel cloud sessions and logout interactions remain unverified.",
+      "disposition": "RETAINED_VALIDATION_BOUNDARY",
+      "owner_role": "control-validation",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the real parallel-session/logout boundary as UNVERIFIED.",
+          "Require separate authorization and sanitized real evidence before changing its classification."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "GATE-U3",
+      "related_findings": [],
+      "source_report_id": "P11",
+      "original_severity": "未验证/真实验收",
+      "beta1_classification": "UNVERIFIED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "UNVERIFIED",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "VALIDATION_GATE",
+      "risk_summary": "Real HA acceptance, statistics inventory and identity checks remain incomplete.",
+      "disposition": "RETAINED_VALIDATION_BOUNDARY",
+      "owner_role": "control-validation",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Keep real Beta A STOP and distinguish this from unverified background integration activity.",
+          "Prepare a read-only inventory plan; require separate authorization for real HA access, installation or Energy source changes."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "BG-U1",
+      "related_findings": [],
+      "source_report_id": "BG0",
+      "original_severity": "关键未验证/资料",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The earlier release evidence availability gap has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    },
+    {
+      "finding_id": "BG-U2",
+      "related_findings": [],
+      "source_report_id": "BG0",
+      "original_severity": "关键未验证/授权接口",
+      "beta1_classification": "CLOSED",
+      "historical_closure": {
+        "applies_to_commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
+        "classification": "CLOSED",
+        "commits": [],
+        "pull_requests": [],
+        "evidence": {
+          "report_id": "BETA1-HISTORICAL",
+          "sha256": "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
+        }
+      },
+      "current_priority": "BASELINE_RETAINED",
+      "risk_summary": "The earlier release object and permission gap has a historical closure.",
+      "disposition": "BASELINE_CLASSIFICATION_RETAINED",
+      "owner_role": "control-and-review",
+      "approved_groups": [],
+      "tracking_group": "A2",
+      "implementation": {
+        "status": "NOT_APPLICABLE_TO_IMPLEMENTATION",
+        "candidate_commit": null,
+        "pull_request": null
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain the historical classification only for its fixed beta1 object.",
+          "Run equivalent regression coverage if this remediation changes its applicable path or contract."
+        ],
+        "evidence": []
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": []
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "remediation group delivery",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed historical path or contract"
+        ]
+      }
+    }
+  ],
+  "additional_findings": [],
+  "remaining_validation": {
+    "real_beta_A": "STOP_INCOMPLETE",
+    "background_integration_disabled": "UNVERIFIED",
+    "real_recorder_impact": "UNVERIFIED",
+    "real_python_3_14_6": "UNVERIFIED",
+    "full_hacs_hassfest_actions": "UNVERIFIED"
+  }
+}
