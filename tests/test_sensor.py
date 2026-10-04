@@ -51,10 +51,13 @@ def stable_default_clock(monkeypatch):
 def test_energy_sensor_descriptions_have_correct_statistics_semantics() -> None:
     """Snapshot entities cannot become an alternate cumulative Energy path."""
     snapshots = (*REALTIME_DESCRIPTIONS, *CURRENT_DESCRIPTIONS, *BILLING_DESCRIPTIONS)
-    assert all(
-        description.state_class is not SensorStateClass.TOTAL_INCREASING
-        for description in snapshots
-    )
+    assert len(snapshots) == 16
+    for description in snapshots:
+        assert description.state_class is (
+            SensorStateClass.MEASUREMENT
+            if description.translation_key == "current_ladder_tariff"
+            else None
+        )
 
 
 def freeze_utcnow(monkeypatch, moment: dt.datetime) -> None:

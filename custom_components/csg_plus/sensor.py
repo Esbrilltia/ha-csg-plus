@@ -104,26 +104,26 @@ class SensorDescription:
 
 
 REALTIME_DESCRIPTIONS = (
-    SensorDescription(SUFFIX_YESTERDAY_KWH, "yesterday_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-arrow-left"),
-    SensorDescription(SUFFIX_BAL, "balance", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:wallet"),
-    SensorDescription(SUFFIX_ARR, "arrears", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:cash-remove"),
+    SensorDescription(SUFFIX_YESTERDAY_KWH, "yesterday_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-arrow-left"),
+    SensorDescription(SUFFIX_BAL, "balance", SensorDeviceClass.MONETARY, "CNY", None, "mdi:wallet"),
+    SensorDescription(SUFFIX_ARR, "arrears", SensorDeviceClass.MONETARY, "CNY", None, "mdi:cash-remove"),
 )
 CURRENT_DESCRIPTIONS = (
     SensorDescription(SUFFIX_CURRENT_LADDER, "current_ladder", icon="mdi:stairs", attributes_key=ATTR_KEY_CURRENT_LADDER_START_DATE),
-    SensorDescription(SUFFIX_CURRENT_LADDER_REMAINING_KWH, "current_ladder_remaining", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:lightning-bolt-circle"),
+    SensorDescription(SUFFIX_CURRENT_LADDER_REMAINING_KWH, "current_ladder_remaining", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:lightning-bolt-circle"),
     SensorDescription(SUFFIX_CURRENT_LADDER_TARIFF, "current_ladder_tariff", unit="CNY/kWh", state_class=SensorStateClass.MEASUREMENT, icon="mdi:currency-cny", attributes_key=_KEY_TARIFF_ATTRIBUTES),
 )
 BILLING_DESCRIPTIONS = (
-    SensorDescription(SUFFIX_LATEST_DAY_KWH, "latest_settlement_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-check", ATTR_KEY_SETTLEMENT_DATE),
-    SensorDescription(SUFFIX_LATEST_DAY_COST, "latest_settlement_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-check", ATTR_KEY_SETTLEMENT_DATE),
-    SensorDescription(SUFFIX_THIS_MONTH_KWH, "this_month_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-month", ATTR_KEY_MONTH_BILLING_DELAY),
-    SensorDescription(SUFFIX_THIS_MONTH_COST, "this_month_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-month", ATTR_KEY_MONTH_BILLING_DELAY),
-    SensorDescription(SUFFIX_LAST_MONTH_KWH, "last_month_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-minus"),
-    SensorDescription(SUFFIX_LAST_MONTH_COST, "last_month_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-minus"),
-    SensorDescription(SUFFIX_THIS_YEAR_KWH, "this_year_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-range", ATTR_KEY_YEAR_BILLING_DELAY),
-    SensorDescription(SUFFIX_THIS_YEAR_COST, "this_year_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-range", ATTR_KEY_YEAR_BILLING_DELAY),
-    SensorDescription(SUFFIX_LAST_YEAR_KWH, "last_year_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-arrow-left"),
-    SensorDescription(SUFFIX_LAST_YEAR_COST, "last_year_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-arrow-left"),
+    SensorDescription(SUFFIX_LATEST_DAY_KWH, "latest_settlement_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-check", ATTR_KEY_SETTLEMENT_DATE),
+    SensorDescription(SUFFIX_LATEST_DAY_COST, "latest_settlement_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-check", ATTR_KEY_SETTLEMENT_DATE),
+    SensorDescription(SUFFIX_THIS_MONTH_KWH, "this_month_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-month", ATTR_KEY_MONTH_BILLING_DELAY),
+    SensorDescription(SUFFIX_THIS_MONTH_COST, "this_month_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-month", ATTR_KEY_MONTH_BILLING_DELAY),
+    SensorDescription(SUFFIX_LAST_MONTH_KWH, "last_month_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-minus"),
+    SensorDescription(SUFFIX_LAST_MONTH_COST, "last_month_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-minus"),
+    SensorDescription(SUFFIX_THIS_YEAR_KWH, "this_year_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-range", ATTR_KEY_YEAR_BILLING_DELAY),
+    SensorDescription(SUFFIX_THIS_YEAR_COST, "this_year_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-range", ATTR_KEY_YEAR_BILLING_DELAY),
+    SensorDescription(SUFFIX_LAST_YEAR_KWH, "last_year_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-arrow-left"),
+    SensorDescription(SUFFIX_LAST_YEAR_COST, "last_year_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-arrow-left"),
 )
 
 
