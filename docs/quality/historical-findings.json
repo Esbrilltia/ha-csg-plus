@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "ledger_revision": "B2-implemented-pending-review",
+  "ledger_revision": "B3-implemented-pending-review",
   "document_kind": "implementation-overlay-pending-independent-review",
   "baseline": {
     "commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
@@ -3101,8 +3101,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "740de645453dec19064a24dc8e63d4e2efdab1d4",
         "pull_request": null
       },
       "acceptance": {
@@ -3112,7 +3112,24 @@
           "Partial success, cross-day and later revisions never make checked_at stand for complete source synchronization.",
           "Tolerance, existing comparison statuses, fact values and independent Bridge materialization remain unchanged."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G4-root.json",
+            "sha256": "63c779199e498337f5cb4aa80f5aded83a5f00b23ba61b21fedabf15cac9d9d2"
+          },
+          {
+            "ref": "G4-final-focused.json",
+            "sha256": "7a2c577b99db3a9f0878d530b428e8815120995f242c3b43730ebf94ffec0329"
+          },
+          {
+            "ref": "G4/implementation-handoff.json",
+            "sha256": "55c18e55cbfdd00404ad53ce53914f108fc2c219bb50f365ffd9a7debc6c4826"
+          },
+          {
+            "ref": "G4-counterexamples-final.json",
+            "sha256": "97a43f76fe564014e56241bd4b63db169cc8323d1023c7fe8018b664d7c09301"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -3653,8 +3670,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "740de645453dec19064a24dc8e63d4e2efdab1d4",
         "pull_request": null
       },
       "acceptance": {
@@ -3664,7 +3681,24 @@
           "Partial success, cross-day and later revisions never make checked_at stand for complete source synchronization.",
           "Tolerance, existing comparison statuses, fact values and independent Bridge materialization remain unchanged."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G4-root.json",
+            "sha256": "63c779199e498337f5cb4aa80f5aded83a5f00b23ba61b21fedabf15cac9d9d2"
+          },
+          {
+            "ref": "G4-final-focused.json",
+            "sha256": "7a2c577b99db3a9f0878d530b428e8815120995f242c3b43730ebf94ffec0329"
+          },
+          {
+            "ref": "G4/implementation-handoff.json",
+            "sha256": "55c18e55cbfdd00404ad53ce53914f108fc2c219bb50f365ffd9a7debc6c4826"
+          },
+          {
+            "ref": "G4-counterexamples-final.json",
+            "sha256": "97a43f76fe564014e56241bd4b63db169cc8323d1023c7fe8018b664d7c09301"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
