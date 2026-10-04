@@ -377,7 +377,9 @@ def test_closed_old_event_loop_cannot_release_disk_order_to_new_loop(worlds, mon
 
         def submit(delegate, function, *args):
             completion = original_submit(delegate, function, *args)
-            if function is json_util.load_json:
+            # The new preflight is the first physical read; it must queue
+            # behind the old writer just like native Store loading does.
+            if function in (json_util.load_json, store_module._preflight_history_file):
                 submitted.set()
             return completion
 

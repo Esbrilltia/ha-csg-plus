@@ -16,7 +16,7 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, Sen
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_UNAVAILABLE, UnitOfEnergy
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_change, async_track_time_interval, async_track_utc_time_change
@@ -129,27 +129,43 @@ BILLING_DESCRIPTIONS = (
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up CSG sensors."""
-    if not entry.data[CONF_ELE_ACCOUNTS]:
-        return
-    history_store = hass.data[DOMAIN][entry.entry_id]["history_store"]
-    bridge = hass.data[DOMAIN][entry.entry_id].get("energy_statistics_bridge")
-    realtime = RealtimeCoordinator(hass, entry, history_store, bridge)
-    current = CurrentCoordinator(hass, entry)
-    billing = BillingCoordinator(hass, entry, history_store, bridge)
-    hass.data[DOMAIN][entry.entry_id]["realtime_coordinator"] = realtime
-    hass.data.setdefault(DOMAIN, {}).setdefault(entry.entry_id, {})[
-        "billing_coordinator"
-    ] = billing
-    await realtime.async_refresh()
-    await current.async_refresh()
-    await billing.async_refresh()
-    billing.start_daily_refresh()
-    entities: list[CSGSensor] = []
-    for account in entry.data[CONF_ELE_ACCOUNTS]:
-        entities.extend(CSGSensor(realtime, account, description) for description in REALTIME_DESCRIPTIONS)
-        entities.extend(CSGSensor(current, account, description) for description in CURRENT_DESCRIPTIONS)
-        entities.extend(CSGSensor(billing, account, description) for description in BILLING_DESCRIPTIONS)
-    async_add_entities(entities)
+    runtime = hass.data[DOMAIN][entry.entry_id]
+    runtime["sensor_setup_task"] = asyncio.current_task()
+    try:
+        if not entry.data[CONF_ELE_ACCOUNTS]:
+            runtime["sensor_setup_complete"] = True
+            return
+        history_store = runtime["history_store"]
+        bridge = runtime.get("energy_statistics_bridge")
+        realtime = runtime["realtime_coordinator"] = RealtimeCoordinator(hass, entry, history_store, bridge)
+        current = runtime["current_coordinator"] = CurrentCoordinator(hass, entry)
+        billing = runtime["billing_coordinator"] = BillingCoordinator(hass, entry, history_store, bridge)
+        await realtime.async_refresh()
+        await current.async_refresh()
+        await billing.async_refresh()
+        billing.start_daily_refresh()
+        entities: list[CSGSensor] = []
+        for account in entry.data[CONF_ELE_ACCOUNTS]:
+            entities.extend(CSGSensor(realtime, account, description) for description in REALTIME_DESCRIPTIONS)
+            entities.extend(CSGSensor(current, account, description) for description in CURRENT_DESCRIPTIONS)
+            entities.extend(CSGSensor(billing, account, description) for description in BILLING_DESCRIPTIONS)
+        before_tasks = set(getattr(entry, "_tasks", ()))
+        try:
+            async_add_entities(entities)
+        finally:
+            # Capture only the existing Core tasks submitted by this callback.
+            # Core may catch their failure after this coroutine has returned.
+            runtime["sensor_entity_tasks"] = tuple(set(getattr(entry, "_tasks", ())) - before_tasks)
+        runtime["sensor_setup_complete"] = True
+    except (Exception, asyncio.CancelledError) as err:
+        # Safe categories only: never retain exception text, payload or session.
+        runtime["sensor_setup_error"] = (
+            "auth" if isinstance(err, ConfigEntryAuthFailed)
+            else "retry" if isinstance(err, ConfigEntryNotReady)
+            else "cancelled" if isinstance(err, asyncio.CancelledError)
+            else type(err).__name__
+        )
+        raise
 
 
 class CSGSensor(CoordinatorEntity, SensorEntity):

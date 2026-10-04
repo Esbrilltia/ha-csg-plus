@@ -40,6 +40,7 @@ def test_untrusted_progress_preserves_facts_isolates_accounts_and_reloads(rig, s
 
     async def forward(*args):
         events.append("forward")
+        rig.hass.data[DOMAIN][rig.entry.entry_id]["sensor_setup_complete"] = True
 
     async def unload(*args):
         events.append("platforms")
@@ -188,8 +189,10 @@ def test_unexpected_account_progress_read_failure_does_not_block_good_account(ri
 
 def test_already_failed_history_task_is_harvested_and_full_unload_reloads(rig, caplog):
     events = []
+    async def forward(*args):
+        rig.hass.data[DOMAIN][rig.entry.entry_id]["sensor_setup_complete"] = True
     rig.hass.config_entries = SimpleNamespace(
-        async_forward_entry_setups=AsyncMock(),
+        async_forward_entry_setups=AsyncMock(side_effect=forward),
         async_unload_platforms=AsyncMock(side_effect=lambda *args: events.append("platforms") or True),
     )
 

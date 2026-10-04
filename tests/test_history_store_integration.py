@@ -14,6 +14,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, call
 
 import pytest
+from homeassistant.exceptions import ConfigEntryNotReady
 
 import custom_components.csg_plus as integration
 from custom_components.csg_plus import history_store as history_module, sensor
@@ -120,6 +121,15 @@ def rig(monkeypatch):
     hass = SimpleNamespace(data={}, async_add_executor_job=execute, is_stopping=False,
                            bus=SimpleNamespace(async_listen_once=Mock(return_value=Mock())))
     monkeypatch.setattr(history_module, "Store", Storage)
+    async def memory_preflight(history):
+        # This rig has keyed memory, not files. Replace the explicit disk-only
+        # boundary while retaining validation of its actual persisted payload.
+        payload = persisted.get(history._store.key)
+        if payload is not None:
+            history_module._validate_history_payload(payload)
+        return payload is None
+
+    monkeypatch.setattr(CSGHistoryStore, "async_preflight_load", memory_preflight)
     monkeypatch.setattr(sensor.CSGCoordinator, "_client", AsyncMock(return_value=client))
     monkeypatch.setattr(sensor.CSGCoordinator, "_fetch", staticmethod(execute))
     monkeypatch.setattr(sensor.CSGCoordinator, "_notify_failure", Mock())
@@ -216,8 +226,9 @@ def test_entry_load_failure_does_not_forward_or_replace_history(rig, monkeypatch
     monkeypatch.setattr(integration, "CSGHistoryStore", factory)
     monkeypatch.setattr(integration.CSGClient, "load", Mock(return_value=rig.client))
     rig.hass.config_entries = SimpleNamespace(async_forward_entry_setups=AsyncMock())
-    with pytest.raises(OSError, match="load failed"):
+    with pytest.raises(ConfigEntryNotReady, match="HistoryStore could not be read") as raised:
         asyncio.run(integration.async_setup_entry(rig.hass, rig.entry))
+    assert isinstance(raised.value.__cause__, OSError)
     factory.assert_called_once_with(rig.hass, rig.entry.entry_id)
     history.async_load.assert_awaited_once()
     rig.hass.config_entries.async_forward_entry_setups.assert_not_awaited()

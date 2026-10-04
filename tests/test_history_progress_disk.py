@@ -84,9 +84,6 @@ def test_real_v1_schema_inputs_preserve_facts_and_unload_reload(worlds, monkeypa
             cloud = SchemaCloud()
             events = []
 
-            async def forward(*args):
-                events.append("forward")
-
             async def platforms(*args):
                 events.append("platforms")
                 return True
@@ -96,6 +93,9 @@ def test_real_v1_schema_inputs_preserve_facts_and_unload_reload(worlds, monkeypa
                 instances.append(hass)
                 entry = owner.entry
                 entry.data[CONF_ELE_ACCOUNTS][GOOD] = CSGElectricityAccount(GOOD).dump()
+                async def forward(*args):
+                    events.append("forward")
+                    hass.data[DOMAIN][entry.entry_id]["sensor_setup_complete"] = True
                 hass.config_entries = SimpleNamespace(
                     async_forward_entry_setups=forward, async_unload_platforms=platforms,
                 )

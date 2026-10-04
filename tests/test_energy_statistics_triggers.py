@@ -50,8 +50,11 @@ def test_entry_initial_request_and_all_producer_shutdown_order(recent_rig, monke
     )
     monkeypatch.setattr(integration, "EnergyStatisticsBridge", Mock(return_value=bridge))
     monkeypatch.setattr(integration.CSGClient, "load", lambda _: recent_rig.client)
+    async def forward(*args):
+        events.append("forward")
+        recent_rig.hass.data[DOMAIN][recent_rig.entry.entry_id]["sensor_setup_complete"] = True
     recent_rig.hass.config_entries = SimpleNamespace(
-        async_forward_entry_setups=AsyncMock(side_effect=lambda *args: events.append("forward")),
+        async_forward_entry_setups=AsyncMock(side_effect=forward),
         async_unload_platforms=AsyncMock(side_effect=lambda *args: events.append("platforms") or True),
     )
     async def scenario():
@@ -78,8 +81,10 @@ def test_optional_recorder_failure_does_not_fail_entry_setup_or_unload(recent_ri
         return task
     recent_rig.entry.async_create_background_task = create_task
     recent_rig.entry.data[CONF_SETTINGS][CONF_ENERGY_STATISTICS_ENABLED] = True
+    async def forward(*args):
+        recent_rig.hass.data[DOMAIN][recent_rig.entry.entry_id]["sensor_setup_complete"] = True
     recent_rig.hass.config_entries = SimpleNamespace(
-        async_forward_entry_setups=AsyncMock(), async_unload_platforms=AsyncMock(return_value=True),
+        async_forward_entry_setups=AsyncMock(side_effect=forward), async_unload_platforms=AsyncMock(return_value=True),
     )
     monkeypatch.setattr(integration.CSGClient, "load", lambda _: recent_rig.client)
     monkeypatch.setattr(energy_statistics, "get_instance", Mock(side_effect=KeyError("Recorder absent")))
