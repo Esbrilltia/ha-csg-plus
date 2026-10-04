@@ -258,9 +258,19 @@ class CSGClient:
                 raise CSGHTTPError(response.status_code)
 
             json_str = response.content.decode("utf-8", errors="ignore")
-            json_str = json_str[json_str.find("{") : json_str.rfind("}") + 1]
-            json_data = json.loads(json_str)
+            try:
+                json_data = json.loads(json_str)
+            except json.JSONDecodeError:
+                # Preserve the existing server prefix/suffix framing. Parse a
+                # complete JSON body first so arrays/scalars cannot masquerade
+                # as an object merely by containing braces.
+                framed = json_str[json_str.find("{") : json_str.rfind("}") + 1]
+                try:
+                    json_data = json.loads(framed)
+                except json.JSONDecodeError:
+                    raise ResponseValidationError("Invalid response envelope JSON") from None
             response_data = json_data
+            self._response_status(response_data)
             _LOGGER.debug(
                 "_make_request: %s, response received",
                 path,
@@ -270,6 +280,24 @@ class CSGClient:
             return response.headers, response_data
 
         raise NotImplementedError()
+
+    @staticmethod
+    def _response_status(response_data: object) -> str:
+        """Validate protocol structure without exposing response values."""
+        if not isinstance(response_data, Mapping):
+            raise ResponseValidationError("Invalid response envelope container")
+        status = response_data.get(JSON_KEY_STA)
+        if not isinstance(status, str) or not status.strip():
+            raise ResponseValidationError("Invalid response envelope status")
+        return status
+
+    def _validated_response_data(self, api_path: str, response_data: object, expected_type: type):
+        """Require success data only for APIs whose contract needs it."""
+        if self._response_status(response_data) != RESP_STA_SUCCESS:
+            self._handle_unsuccessful_response(api_path, response_data)
+        if JSON_KEY_DATA not in response_data or not isinstance(response_data[JSON_KEY_DATA], expected_type):
+            raise ResponseValidationError("Invalid response envelope data")
+        return response_data[JSON_KEY_DATA]
 
     def _handle_unsuccessful_response(self, api_path: str, response_data: dict):
         """Handles sta=!RESP_STA_SUCCESS"""
@@ -456,9 +484,7 @@ class CSGClient:
         # custom_headers = {"funid": "100t002"}
         custom_headers = {}
         _, resp_data = self._make_request(path, payload, custom_headers=custom_headers)
-        if resp_data[JSON_KEY_STA] == RESP_STA_SUCCESS:
-            return resp_data[JSON_KEY_DATA]
-        self._handle_unsuccessful_response(path, resp_data)
+        return self._validated_response_data(path, resp_data, Mapping)
 
     def api_query_day_electric_charge_by_m_point(
         self,
@@ -536,9 +562,7 @@ class CSGClient:
         path = "charge/queryUserAccountNumberSurplus"
         payload = {JSON_KEY_AREA_CODE: area_code, JSON_KEY_ELE_CUST_ID: ele_customer_id}
         _, resp_data = self._make_request(path, payload)
-        if resp_data[JSON_KEY_STA] == RESP_STA_SUCCESS:
-            return resp_data[JSON_KEY_DATA]
-        self._handle_unsuccessful_response(path, resp_data)
+        return self._validated_response_data(path, resp_data, list)
 
     def api_get_fee_analyze_details(
         self, year: int, area_code: str, ele_customer_id: str
@@ -554,9 +578,7 @@ class CSGClient:
             JSON_KEY_METERING_POINT_ID: None,  # this is set to null in api
         }
         _, resp_data = self._make_request(path, payload)
-        if resp_data[JSON_KEY_STA] == RESP_STA_SUCCESS:
-            return resp_data[JSON_KEY_DATA]
-        self._handle_unsuccessful_response(path, resp_data)
+        return self._validated_response_data(path, resp_data, Mapping)
 
     def api_query_day_electric_by_m_point_yesterday(
         self,
