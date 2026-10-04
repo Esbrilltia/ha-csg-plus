@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "ledger_revision": "A1-implemented-pending-review",
+  "ledger_revision": "B1-implemented-pending-review",
   "document_kind": "implementation-overlay-pending-independent-review",
   "baseline": {
     "commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
@@ -648,8 +648,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "f2a0150e8a8dd6f47a65b0b5ccd2ac3c8106dd0f",
         "pull_request": null
       },
       "acceptance": {
@@ -659,7 +659,24 @@
           "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
           "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G2-final-focused.json",
+            "sha256": "d07b56b76f2ac1ceabbd4974a3332306fd49f632f083c915c79ff44228349af5"
+          },
+          {
+            "ref": "G2-root.json",
+            "sha256": "cf3b65dd3e25b3df30705ae1fb1d7f12b0c343e312f63776011168c52e54f0e9"
+          },
+          {
+            "ref": "G2-coordinator-conflict.json",
+            "sha256": "58c817126f5986e74f0432874fe249e66ad95789f8840f6fa4a0121baab8fb28"
+          },
+          {
+            "ref": "G2/candidate-evidence-results.json",
+            "sha256": "6401a1a5e4b13c3ee9cbf6e9ef4f5c0766923384ff1b32adbcdaa911a5c04a99"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -1776,8 +1793,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "f2a0150e8a8dd6f47a65b0b5ccd2ac3c8106dd0f",
         "pull_request": null
       },
       "acceptance": {
@@ -1788,7 +1805,24 @@
           "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact.",
           "Synthetic coverage must remain distinct from unknown real server behavior."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G2-final-focused.json",
+            "sha256": "d07b56b76f2ac1ceabbd4974a3332306fd49f632f083c915c79ff44228349af5"
+          },
+          {
+            "ref": "G2-root.json",
+            "sha256": "cf3b65dd3e25b3df30705ae1fb1d7f12b0c343e312f63776011168c52e54f0e9"
+          },
+          {
+            "ref": "G2-coordinator-conflict.json",
+            "sha256": "58c817126f5986e74f0432874fe249e66ad95789f8840f6fa4a0121baab8fb28"
+          },
+          {
+            "ref": "G2/candidate-evidence-results.json",
+            "sha256": "6401a1a5e4b13c3ee9cbf6e9ef4f5c0766923384ff1b32adbcdaa911a5c04a99"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -2137,8 +2171,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "f2a0150e8a8dd6f47a65b0b5ccd2ac3c8106dd0f",
         "pull_request": null
       },
       "acceptance": {
@@ -2148,7 +2182,24 @@
           "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
           "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G2-final-focused.json",
+            "sha256": "d07b56b76f2ac1ceabbd4974a3332306fd49f632f083c915c79ff44228349af5"
+          },
+          {
+            "ref": "G2-root.json",
+            "sha256": "cf3b65dd3e25b3df30705ae1fb1d7f12b0c343e312f63776011168c52e54f0e9"
+          },
+          {
+            "ref": "G2-coordinator-conflict.json",
+            "sha256": "58c817126f5986e74f0432874fe249e66ad95789f8840f6fa4a0121baab8fb28"
+          },
+          {
+            "ref": "G2/candidate-evidence-results.json",
+            "sha256": "6401a1a5e4b13c3ee9cbf6e9ef4f5c0766923384ff1b32adbcdaa911a5c04a99"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -2488,8 +2539,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "f2a0150e8a8dd6f47a65b0b5ccd2ac3c8106dd0f",
         "pull_request": null
       },
       "acceptance": {
@@ -2499,7 +2550,24 @@
           "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
           "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G2-final-focused.json",
+            "sha256": "d07b56b76f2ac1ceabbd4974a3332306fd49f632f083c915c79ff44228349af5"
+          },
+          {
+            "ref": "G2-root.json",
+            "sha256": "cf3b65dd3e25b3df30705ae1fb1d7f12b0c343e312f63776011168c52e54f0e9"
+          },
+          {
+            "ref": "G2-coordinator-conflict.json",
+            "sha256": "58c817126f5986e74f0432874fe249e66ad95789f8840f6fa4a0121baab8fb28"
+          },
+          {
+            "ref": "G2/candidate-evidence-results.json",
+            "sha256": "6401a1a5e4b13c3ee9cbf6e9ef4f5c0766923384ff1b32adbcdaa911a5c04a99"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -2910,8 +2978,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "f2a0150e8a8dd6f47a65b0b5ccd2ac3c8106dd0f",
         "pull_request": null
       },
       "acceptance": {
@@ -2925,7 +2993,24 @@
           "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
           "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G2-final-focused.json",
+            "sha256": "d07b56b76f2ac1ceabbd4974a3332306fd49f632f083c915c79ff44228349af5"
+          },
+          {
+            "ref": "G2-root.json",
+            "sha256": "cf3b65dd3e25b3df30705ae1fb1d7f12b0c343e312f63776011168c52e54f0e9"
+          },
+          {
+            "ref": "G2-coordinator-conflict.json",
+            "sha256": "58c817126f5986e74f0432874fe249e66ad95789f8840f6fa4a0121baab8fb28"
+          },
+          {
+            "ref": "G2/candidate-evidence-results.json",
+            "sha256": "6401a1a5e4b13c3ee9cbf6e9ef4f5c0766923384ff1b32adbcdaa911a5c04a99"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
@@ -3413,8 +3498,8 @@
       ],
       "tracking_group": "A2",
       "implementation": {
-        "status": "NOT_STARTED",
-        "candidate_commit": null,
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "f2a0150e8a8dd6f47a65b0b5ccd2ac3c8106dd0f",
         "pull_request": null
       },
       "acceptance": {
@@ -3424,7 +3509,24 @@
           "Display candidates use current validated responses while retained Store facts preserve lawful revisions and retry semantics.",
           "Client through coordinator, Store, Bridge and temporary Recorder rejects a future business-day energy fact."
         ],
-        "evidence": []
+        "evidence": [
+          {
+            "ref": "G2-final-focused.json",
+            "sha256": "d07b56b76f2ac1ceabbd4974a3332306fd49f632f083c915c79ff44228349af5"
+          },
+          {
+            "ref": "G2-root.json",
+            "sha256": "cf3b65dd3e25b3df30705ae1fb1d7f12b0c343e312f63776011168c52e54f0e9"
+          },
+          {
+            "ref": "G2-coordinator-conflict.json",
+            "sha256": "58c817126f5986e74f0432874fe249e66ad95789f8840f6fa4a0121baab8fb28"
+          },
+          {
+            "ref": "G2/candidate-evidence-results.json",
+            "sha256": "6401a1a5e4b13c3ee9cbf6e9ef4f5c0766923384ff1b32adbcdaa911a5c04a99"
+          }
+        ]
       },
       "independent_review": {
         "status": "NOT_PERFORMED",
