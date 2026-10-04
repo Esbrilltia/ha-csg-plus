@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "ledger_revision": "G5-implemented-pending-review",
+  "ledger_revision": "G8-residual-implemented-pending-review",
   "document_kind": "implementation-overlay-pending-independent-review",
   "baseline": {
     "commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
@@ -134,6 +134,10 @@
     {
       "report_id": "TASK7",
       "sha256": "459c440a54ddb2a8d7fa9993f63531b95a3e8d0436eab30695ec86f9605d08eb"
+    },
+    {
+      "report_id": "BETA2-INDEPENDENT-2026-10-05",
+      "sha256": "93fca3fcc04ae747d2d1078f6493659acfda45dc22cc945be5749dd3cc6d3ee6"
     }
   ],
   "findings": [
@@ -5801,7 +5805,161 @@
       }
     }
   ],
-  "additional_findings": [],
+  "additional_findings": [
+    {
+      "finding_id": "IR-B1-03",
+      "related_findings": [
+        "R1-B2"
+      ],
+      "source_report_id": "BETA2-INDEPENDENT-2026-10-05",
+      "original_severity": "B",
+      "current_priority": "B",
+      "risk_summary": "Retained beta.1 future daily facts must not materialize before their Shanghai business date.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "G6"
+      ],
+      "tracking_group": "B1-residual",
+      "implementation": {
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "5bb2ddcb1ecda3392c4fcc0a4ba790dcecaad151",
+        "pull_request": 13
+      },
+      "acceptance": {
+        "criteria": [
+          "Retain every compatible persisted daily fact and exact Store bytes/mtime; do not migrate, delete, replace dates, or manufacture zero.",
+          "Bridge materializes only fact dates no later than current Asia/Shanghai natural day, including legitimate today zero.",
+          "Native temporary Store/Recorder prove fresh, reload, date advancement, existing legal-history preservation and finalization; excluded facts become eligible when their date arrives.",
+          "Safe bounded diagnosis; keep statistic identity, sum/anchor and audited lane/readback ownership unchanged."
+        ],
+        "evidence": [
+          {
+            "ref": "residual-remediation/g6-regression.json",
+            "sha256": "942d015bcbb094f6d9cb8e0d7de73203ef4a2eac5cdbb9fe0ccd873cf2d85ffd"
+          },
+          {
+            "ref": "residual-remediation/beta1-fixture-provenance.json",
+            "sha256": "f9b16b1c88a44e5a887ad9b639ceb97f2d1f35ea05879b2d38b4995f1ee8f101"
+          }
+        ]
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": [],
+        "reviewed_tree": null
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "fixed final HEAD/tree incremental independent review",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed protocol/materialization boundary"
+        ]
+      },
+      "source_observation": {
+        "observed_head": "a76bb1a228ed9c417a9444820f28e65cfc759938",
+        "observed_tree": "ae8f9fcc60affadae98d036de617dd52ed320dac",
+        "report": "ha-csg-plus_Beta2_Independent_Group_Review_2026-10-05.txt",
+        "report_sha256": "93fca3fcc04ae747d2d1078f6493659acfda45dc22cc945be5749dd3cc6d3ee6",
+        "classification": "B nonblocking; no risk acceptance"
+      }
+    },
+    {
+      "finding_id": "IR-B1-01",
+      "related_findings": [
+        "R1-B2"
+      ],
+      "source_report_id": "BETA2-INDEPENDENT-2026-10-05",
+      "original_severity": "B",
+      "current_priority": "B",
+      "risk_summary": "Malformed low-level response envelopes must not abort later accounts in the same coordinator refresh.",
+      "disposition": "APPROVED_REMEDIATION",
+      "owner_role": "implementation",
+      "approved_groups": [
+        "G7"
+      ],
+      "tracking_group": "B1-residual",
+      "implementation": {
+        "status": "IMPLEMENTED_PENDING_REVIEW",
+        "candidate_commit": "51fd4a5a7afbb75549cbbe858735961e89097ace",
+        "pull_request": 13
+      },
+      "acceptance": {
+        "criteria": [
+          "Malformed HTTP envelope container/status and required daily/year/balance success data raise safe existing ResponseValidationError.",
+          "Both Realtime and Billing refresh bad account before good account on actual fake HTTP; good account still completes and bad facts are retained without false display values.",
+          "Preserve valid empty data, true zero, NotLoggedIn, InvalidCredentials, SMS/header-based login and QR waiting/error status semantics."
+        ],
+        "evidence": [
+          {
+            "ref": "residual-remediation/g7-regression-v2.json",
+            "sha256": "47ee916beaa5c23385fa01e8db7486c50e640edebc3a14b2173e4450ed8db0dc"
+          },
+          {
+            "ref": "residual-remediation/g7-baseline-replay-binding.json",
+            "sha256": "178e66491c80af457d11e7b0079f80a9c534376eeeb76ee7440a8e25af06738b"
+          }
+        ]
+      },
+      "independent_review": {
+        "status": "NOT_PERFORMED",
+        "reviewer": null,
+        "reviewed_head": null,
+        "evidence": [],
+        "reviewed_tree": null
+      },
+      "independent_closure": {
+        "status": "NOT_CLOSED",
+        "closed_commit": null,
+        "reviewer": null,
+        "evidence": []
+      },
+      "risk_acceptance": {
+        "decision": null,
+        "owner": null,
+        "reason": null,
+        "expires_at": null,
+        "review_triggers": [],
+        "evidence": []
+      },
+      "next_review": {
+        "checkpoints": [
+          "fixed final HEAD/tree incremental independent review",
+          "next release gate"
+        ],
+        "triggers": [
+          "new evidence",
+          "changed protocol/materialization boundary"
+        ]
+      },
+      "source_observation": {
+        "observed_head": "a76bb1a228ed9c417a9444820f28e65cfc759938",
+        "observed_tree": "ae8f9fcc60affadae98d036de617dd52ed320dac",
+        "report": "ha-csg-plus_Beta2_Independent_Group_Review_2026-10-05.txt",
+        "report_sha256": "93fca3fcc04ae747d2d1078f6493659acfda45dc22cc945be5749dd3cc6d3ee6",
+        "classification": "B nonblocking; no risk acceptance"
+      }
+    }
+  ],
   "remaining_validation": {
     "real_beta_A": "STOP_INCOMPLETE",
     "background_integration_disabled": "UNVERIFIED",

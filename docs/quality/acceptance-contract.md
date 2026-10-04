@@ -82,6 +82,43 @@ conversion, coordinators, Store, Bridge and temporary Recorder. That expands the
 original evidence beyond Store/statistics construction; it does not demonstrate
 any user's database impact.
 
+## Independent residual observations (G6/G7)
+
+The independent review of HEAD `a76bb1a228ed9c417a9444820f28e65cfc759938`
+(tree `ae8f9fcc60affadae98d036de617dd52ed320dac`) supplied two additional
+B observations: IR-B1-03 and IR-B1-01. They are separate from the original
+77 historical rows. B nonblocking does not constitute risk acceptance.
+
+IR-B1-03 distinguishes ingress from retained state. Compatible V1 files may
+already contain future daily facts. Store retains those dates, values and file
+bytes/mtime. The Bridge's authoritative energy materialization boundary includes
+only dates no later than the current Asia/Shanghai natural day, including today
+and legitimate zero. Each pass re-evaluates eligibility; the date's arrival makes
+the retained fact eligible normally. Safe diagnosis is bounded per Bridge
+instance and omits identifiers and values. Native temporary Store/Recorder
+examples must retain September 2=2, September 3=0, September 30=9 while, on
+September 3, importing only states 2/0 and sums 2/2. Reload keeps the file intact;
+on/after September 30 the 9 becomes sum 11. Existing legal statistics remain
+unchanged. Finalization uses the same boundary. This does not authorize cleanup
+of any existing future Recorder rows or change identity, sum/anchor or ownership.
+
+IR-B1-01 requires protocol envelopes to be mappings with a nonempty string
+status. Daily/year/balance success responses require their actual mapping/list
+data contract. Malformed JSON/envelope/data raises the existing safe typed
+ResponseValidationError; no false success, zero or empty response is invented.
+Existing server framing and valid empty data remain compatible. Authentic error
+statuses keep existing NotLoggedIn/API error behavior; SMS and header-based login
+or QR status responses are not forced to contain success data. Both Realtime and
+Billing must continue a good second account after a malformed first account,
+retaining the first account's facts and marking affected observations unavailable.
+
+G8 appends only these two findings as IMPLEMENTED_PENDING_REVIEW, independent
+review NOT_PERFORMED, closure NOT_CLOSED and risk decision null. The complete
+old 77-row overlay and the ten unapplied closure recommendations remain frozen
+during this implementation round. R1-B2/R2-B4/M1-B5 keep their historical partial
+boundaries. Any subsequent review/closure record needs separate authorization
+and binding to the newly frozen final HEAD/tree.
+
 ## V1 persisted business schema (B2 / M1-B2/B3/B5)
 
 No storage version, key or identity migration is permitted. A nonexistent file

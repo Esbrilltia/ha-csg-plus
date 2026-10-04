@@ -24,6 +24,13 @@ INPUT_HASH = "d0468896ccc6188e1ae5d2fcde8cd396a52868abc191a57e311139ed09bcde18"
 REPORT_HASH = "ed535d1fc83b0f53272167ab333048dfd73c043fe008c10b76819c49e2d9f64f"
 HISTORICAL_METADATA_HASH = "53090aded0580060c572d6a902f5d3741059602aa9a2f09491e2753153dcc589"
 SOURCE_METADATA_HASH = "ee558eb6af081a6142ee6f7f3ded7ab93ae07fe541eeb50caff57735162c286e"
+RESIDUAL_SOURCE = "BETA2-INDEPENDENT-2026-10-05"
+RESIDUAL_REPORT_HASH = "93fca3fcc04ae747d2d1078f6493659acfda45dc22cc945be5749dd3cc6d3ee6"
+OLD_REVIEWED_HEAD = "a76bb1a228ed9c417a9444820f28e65cfc759938"
+OLD_REVIEWED_TREE = "ae8f9fcc60affadae98d036de617dd52ed320dac"
+# Complete 77-row overlay at the independently reviewed old HEAD, including
+# implementation/review/closure fields. Advice is not permission to mutate it.
+OLD_REVIEWED_ROWS_HASH = "0f16bd6ce51b8ccdb532373813583e1745c7c1b78d7bf8c614af2fbb0bbe389d"
 EXPECTED_IDS = frozenset("""
 R1-A1 R1-A2 R1-A3 R1-A4 R1-A5 R1-A6
 R1-B1 R1-B2 R1-B3 R1-B4 R1-B5 R1-B6 R1-C1 R1-C2 R1-C3 R1-C4
@@ -123,8 +130,10 @@ def reconcile_ledger(ledger: dict, *, repository: Path = REPOSITORY_PATH) -> dic
     source_map = {source["report_id"]: source["sha256"] for source in sources}
     require(all(HEX64.fullmatch(value) for value in source_map.values()), "invalid source hash")
     require(source_map.get("BETA1-HISTORICAL") == REPORT_HASH, "historical report hash drift")
-    source_metadata = sorted((key, value) for key, value in source_map.items() if key != "BETA1-HISTORICAL")
+    source_metadata = sorted((key, value) for key, value in source_map.items()
+                             if key not in {"BETA1-HISTORICAL", RESIDUAL_SOURCE})
     require(fingerprint(source_metadata) == SOURCE_METADATA_HASH, "source provenance drift")
+    require(source_map.get(RESIDUAL_SOURCE) == RESIDUAL_REPORT_HASH, "residual source provenance drift")
 
     additions = ledger["additional_findings"]
     additional_ids = [record["finding_id"] for record in additions]
@@ -205,6 +214,57 @@ def reconcile_ledger(ledger: dict, *, repository: Path = REPOSITORY_PATH) -> dic
         "set_completeness": {"input_count": 77, "located_count": len(records), "missing": [], "unexpected_historical": [], "additional_ids": sorted(additional_ids)},
         "remaining_risk": {"historically_active_count": len(active), "not_independently_closed_count": len(remaining), "finding_ids": sorted(record["finding_id"] for record in remaining), "additional_finding_ids": sorted(record["finding_id"] for record in additions), "additional_not_closed_count": sum(record["independent_closure"]["status"] != "CLOSED" for record in additions), "implementation_pending_review_count": sum(record["implementation"]["status"] == "IMPLEMENTED_PENDING_REVIEW" for record in active), "validation_boundaries": ledger["remaining_validation"]},
     }
+
+
+def validate_residual_round_snapshot(ledger: dict) -> None:
+    """This implementation round has no authorization to apply review advice."""
+    require(fingerprint(ledger["findings"]) == OLD_REVIEWED_ROWS_HASH,
+            "old reviewed historical overlay changed during residual implementation")
+    additions = ledger["additional_findings"]
+    require({row["finding_id"] for row in additions} == {"IR-B1-01", "IR-B1-03"}
+            and len(additions) == 2, "residual scope differs from approved two observations")
+    for row in additions:
+        require(row["source_report_id"] == RESIDUAL_SOURCE
+                and row["source_observation"]["observed_head"] == OLD_REVIEWED_HEAD
+                and row["source_observation"]["observed_tree"] == OLD_REVIEWED_TREE
+                and row["source_observation"]["report_sha256"] == RESIDUAL_REPORT_HASH,
+                "residual observation is not bound to original independent source")
+        require(row["original_severity"] == "B", "residual severity drift")
+        require(row["implementation"]["status"] == "IMPLEMENTED_PENDING_REVIEW"
+                and row["independent_review"]["status"] == "NOT_PERFORMED"
+                and row["independent_closure"]["status"] == "NOT_CLOSED"
+                and row["risk_acceptance"]["decision"] is None,
+                "residual implementation cannot claim review, closure or accepted risk")
+
+
+def test_residual_snapshot_preserves_history_and_unperformed_review(ledger):
+    validate_residual_round_snapshot(ledger)
+
+
+@pytest.mark.parametrize("mutation,message", [
+    ("history", "historical overlay changed"), ("omitted", "approved two observations"),
+    ("source", "bound to original independent source"), ("severity", "severity drift"),
+    ("review", "cannot claim review"), ("closure", "cannot claim review"),
+    ("risk", "cannot claim review"), ("implementation", "cannot claim review"),
+])
+def test_residual_gate_rejects_scope_drift_and_fabricated_decisions(ledger, mutation, message):
+    row = ledger["additional_findings"][0]
+    if mutation == "history":
+        ledger["findings"][0]["independent_review"]["status"] = "PASSED"
+    elif mutation == "omitted":
+        ledger["additional_findings"].pop()
+    elif mutation == "source":
+        row["source_observation"]["observed_head"] = BASE
+    elif mutation == "severity":
+        row["original_severity"] = "A"
+    else:
+        field, value = {"review": ("independent_review", "PASSED"),
+                        "closure": ("independent_closure", "CLOSED"),
+                        "risk": ("risk_acceptance", "ACCEPTED"),
+                        "implementation": ("implementation", "CLOSED")}[mutation]
+        row[field]["decision" if mutation == "risk" else "status"] = value
+    with pytest.raises(ValueError, match=message):
+        validate_residual_round_snapshot(ledger)
 
 
 @pytest.fixture
@@ -372,15 +432,18 @@ def test_gate_rejects_loss_or_unsupported_risk_changes(ledger, mutation, message
 
 
 def test_new_findings_are_reported_separately_without_replacing_history(ledger):
+    existing_ids = [row["finding_id"] for row in ledger["additional_findings"]]
+    existing_not_closed = sum(row["independent_closure"]["status"] != "CLOSED"
+                              for row in ledger["additional_findings"])
     added = deepcopy(ledger["findings"][0])
     added["finding_id"] = "NEW-SYNTHETIC-1"
     added["related_findings"] = ["R1-B4"]
     ledger["additional_findings"].append(added)
     report = reconcile_ledger(ledger)
     assert report["set_completeness"]["located_count"] == 77
-    assert report["set_completeness"]["additional_ids"] == ["NEW-SYNTHETIC-1"]
-    assert report["remaining_risk"]["additional_finding_ids"] == ["NEW-SYNTHETIC-1"]
-    assert report["remaining_risk"]["additional_not_closed_count"] == 1
+    assert report["set_completeness"]["additional_ids"] == sorted(existing_ids + ["NEW-SYNTHETIC-1"])
+    assert report["remaining_risk"]["additional_finding_ids"] == sorted(existing_ids + ["NEW-SYNTHETIC-1"])
+    assert report["remaining_risk"]["additional_not_closed_count"] == existing_not_closed + 1
     added["related_findings"] = ["UNKNOWN-SYNTHETIC-1"]
     with pytest.raises(ValueError, match="unresolved relation"):
         reconcile_ledger(ledger)
@@ -511,5 +574,7 @@ def test_evidence_pair_binding_rejects_unsafe_container_types(ledger, field, val
 
 
 if __name__ == "__main__":
-    result = reconcile_ledger(json.loads(LEDGER_PATH.read_text(encoding="utf-8")))
+    actual = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
+    validate_residual_round_snapshot(actual)
+    result = reconcile_ledger(actual)
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
