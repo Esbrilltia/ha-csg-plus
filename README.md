@@ -4,7 +4,7 @@
 
 **CSG Plus** (`ha-csg-plus`) is an independent Home Assistant custom integration
 for China Southern Power Grid electricity data. **Home Assistant domain: `csg_plus`.**
-Candidate version: **`3.0.0-beta.1`**.
+Source version: **`3.0.0-beta.1`**.
 
 This project builds on [orangeboyChen/ha-csg](https://github.com/orangeboyChen/ha-csg)
 and [CubicPill/china_southern_power_grid_stat](https://github.com/CubicPill/china_southern_power_grid_stat).
@@ -228,16 +228,16 @@ The audited baseline is Home Assistant Core **`2026.9.3`** / Python **`3.14.2`**
 HACS declares **`2026.9.3`** as the minimum HA version. Other Core versions have
 not been tested; no wider compatibility is claimed.
 
-After a standalone build is published, add this repository to
-[HACS](https://hacs.xyz/) as a custom repository with category **Integration**,
-then install **CSG Statistics Plus** and restart Home Assistant. The package
-contains one integration: `custom_components/csg_plus`.
+Beta builds are published as GitHub prereleases. Add this repository to
+[HACS](https://hacs.xyz/) as a custom **Integration** repository. When a prerelease
+is available, users who opt into beta/prerelease versions for this repository
+can select that release. Install **CSG Statistics Plus** and restart Home Assistant.
+The package contains one integration: `custom_components/csg_plus`.
 
 The current canonical repository is
 [Esbrilltia/ha-csg-plus](https://github.com/Esbrilltia/ha-csg-plus/), with
 [its issue tracker](https://github.com/Esbrilltia/ha-csg-plus/issues).
-The repository rename is complete. Candidate `3.0.0-beta.1` has not been tagged,
-released or published as a HACS beta.
+The repository rename is complete.
 
 ## Moving from upstream csg
 
