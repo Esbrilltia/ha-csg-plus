@@ -180,7 +180,7 @@ def test_invalid_yesterday_does_not_hide_an_older_valid_daily_fact(power):
     assert billing[ATTR_KEY_SETTLEMENT_DATE] == {ATTR_KEY_SETTLEMENT_DATE: "2026-08-01"}
 
 
-def test_mixed_daily_response_keeps_valid_rows_for_all_consumers():
+def test_mixed_daily_response_keeps_valid_rows_for_snapshot_consumers():
     client = make_client([
         {"date": "2026-08-01", "power": "270"}, {"date": "2026-08-02", "power": 0.0},
         {"date": "2026-08-03", "power": "NaN"}, {"date": "2026-08-04", "power": float("inf")},
@@ -204,6 +204,11 @@ def test_invalid_daily_values_do_not_enter_ladder_accumulation(power):
     client = make_client([
         {"date": "2026-08-01", "power": power}, {"date": "2026-08-02", "power": 270},
     ], total="270")
+    # M0-B6: assert the real conversion boundary, before tariff's own filtering
+    # could hide a broken client. Retain the marker and the valid daily fact.
+    assert client.get_month_daily_usage_detail(ACCOUNT, (2026, 8)) == (270, [
+        {"date": "2026-08-01"}, {"date": "2026-08-02", "kwh": 270},
+    ])
     current = make_coordinator(CurrentCoordinator, client)
     data = run(current._async_update_data())
     assert data[ACCOUNT.account_number][ATTR_KEY_CURRENT_LADDER_START_DATE] == {

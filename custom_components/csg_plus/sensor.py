@@ -63,7 +63,6 @@ from .csg_client import (
     WF_ATTR_CHARGE,
     WF_ATTR_DATE,
     WF_ATTR_KWH,
-    WF_ATTR_MONTH,
     WF_ATTR_LADDER,
     WF_ATTR_LADDER_REMAINING_KWH,
     WF_ATTR_LADDER_START_DATE,
@@ -76,6 +75,7 @@ from .csg_client import (
 from .history_store import CSGHistoryStore
 from .energy_statistics import EnergyStatisticsBridge
 from .history_helpers import (
+    collect_daily_usage_candidates,
     collect_monthly_bill_candidates as _collect_monthly_bill_candidates,
 )
 from .tariff import TariffProfile, current_ladder, resolve_tariff_profile
@@ -502,20 +502,14 @@ class RealtimeCoordinator(CSGFactCoordinator):
                 if self.energy_statistics_bridge is not None:
                     self.energy_statistics_bridge.request_sync()
 
-                valid_days = [
-                    item
-                    for item in usage_days
-                    if item.get(WF_ATTR_DATE) is not None
-                    and item.get(WF_ATTR_KWH) is not None
-                ]
+                candidates = collect_daily_usage_candidates(
+                    usage_days, account.account_number, (year, month), today=today,
+                )
 
-                if not valid_days:
+                if not candidates:
                     continue
 
-                for item in valid_days:
-                    if str(item[WF_ATTR_DATE]) == yesterday:
-                        yesterday_usage = float(item[WF_ATTR_KWH])
-                        break
+                yesterday_usage = candidates.get(yesterday)
 
                 # Months are checked newest first. Once one contains published
                 # daily data, an older month cannot contain a newer reading.
@@ -745,10 +739,13 @@ class BillingCoordinator(CSGFactCoordinator):
                     self.energy_statistics_bridge.request_sync()
                 # The client also returns date-only coverage markers. Settlement
                 # selection uses valid facts; the markers are only for tariff.
-                daily_days = sorted(
-                    (item for item in usage_days if item.get(WF_ATTR_KWH) is not None),
-                    key=lambda item: str(item[WF_ATTR_DATE]),
+                candidates = collect_daily_usage_candidates(
+                    usage_days, account.account_number, (year, month),
                 )
+                daily_days = [
+                    {WF_ATTR_DATE: day, WF_ATTR_KWH: value}
+                    for day, value in candidates.items()
+                ]
 
                 values = (
                     usage_total,
@@ -827,7 +824,8 @@ class BillingCoordinator(CSGFactCoordinator):
     ) -> None:
         now = _csg_today()
         previous_month = now.replace(day=1) - dt.timedelta(days=1)
-        previous_month_key = f"{previous_month.year}{previous_month.month:02d}"
+        data[SUFFIX_LAST_MONTH_KWH] = STATE_UNAVAILABLE
+        data[SUFFIX_LAST_MONTH_COST] = STATE_UNAVAILABLE
 
         for year, usage_suffix, cost_suffix in (
             (
@@ -870,23 +868,14 @@ class BillingCoordinator(CSGFactCoordinator):
                 if bill_candidates and self.energy_statistics_bridge is not None:
                     self.energy_statistics_bridge.request_sync()
 
-                for month_data in by_month:
-                    if not isinstance(month_data, Mapping):
-                        continue
-                    month_key = str(
-                        month_data.get(WF_ATTR_MONTH, "")
-                    ).replace("-", "")
-
-                    if month_key == previous_month_key:
-                        data[SUFFIX_LAST_MONTH_KWH] = month_data.get(
-                            WF_ATTR_KWH,
-                            STATE_UNAVAILABLE,
-                        )
-                        data[SUFFIX_LAST_MONTH_COST] = month_data.get(
-                            WF_ATTR_CHARGE,
-                            STATE_UNAVAILABLE,
-                        )
-                        break
+                previous_bill = bill_candidates.get((previous_month.year, previous_month.month))
+                if previous_bill is not None:
+                    data[SUFFIX_LAST_MONTH_KWH] = (
+                        previous_bill[0] if previous_bill[0] is not None else STATE_UNAVAILABLE
+                    )
+                    data[SUFFIX_LAST_MONTH_COST] = (
+                        previous_bill[1] if previous_bill[1] is not None else STATE_UNAVAILABLE
+                    )
 
                 if year == now.year:
                     billing_through = (

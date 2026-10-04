@@ -12,17 +12,17 @@ from copy import deepcopy
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
-from zoneinfo import ZoneInfo
 
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN
-from .csg_client import WF_ATTR_DATE, WF_ATTR_KWH
-from .history_helpers import parse_history_start_month
+from .history_helpers import (
+    collect_daily_usage_candidates, csg_today, finite_number,
+    parse_history_start_month, validate_history_month,
+)
 from .history_io import HistoryStorageHass
-from .utils import account_log_id
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +32,6 @@ DAILY_USAGE_SOURCE = "daily_usage_api"
 MONTHLY_BILL_SOURCE = "year_month_stats"
 _DAILY_VALUE_ABS_TOL = 1e-9
 _RECONCILIATION_ABS_TOL_KWH = Decimal("0.01")
-_CSG_TIME_ZONE = ZoneInfo("Asia/Shanghai")
 
 
 @dataclass(frozen=True)
@@ -92,40 +91,9 @@ class CSGHistoryStore:
         year, month_number = _validate_month(month)
         month_key = _month_key(year, month_number)
 
-        candidate_sets: dict[str, set[float]] = {}
-
-        for item in days:
-            day_key = _validated_day_key(
-                item.get(WF_ATTR_DATE), year, month_number
-            )
-            if day_key is None:
-                continue
-
-            value = _nonnegative_finite(item.get(WF_ATTR_KWH))
-            if value is None:
-                continue
-
-            candidate_sets.setdefault(day_key, set()).add(value)
-
-        candidates: dict[str, float] = {}
-        for day_key, values in candidate_sets.items():
-            # Approximate equality is not transitive. The full range must fit
-            # the tolerance, independent of which candidate arrived first.
-            smallest = min(values)
-            if not math.isclose(
-                smallest,
-                max(values),
-                rel_tol=0.0,
-                abs_tol=_DAILY_VALUE_ABS_TOL,
-            ):
-                _LOGGER.warning(
-                    "Conflicting daily usage values for %s on %s; skipped date",
-                    account_log_id(account),
-                    day_key,
-                )
-                continue
-            # Choose an actual source value, not an average or first arrival.
-            candidates[day_key] = smallest
+        candidates = collect_daily_usage_candidates(
+            days, account, (year, month_number), today=_csg_today(),
+        )
 
         async with self._lock:
             account_data = self._account(account)
@@ -546,47 +514,15 @@ class CSGHistoryStore:
 
 
 def _validate_month(month: tuple[int, int]) -> tuple[int, int]:
-    year, month_number = month
-    if year < 1 or not 1 <= month_number <= 12:
-        raise ValueError(f"Invalid month: {month!r}")
-    return year, month_number
+    return validate_history_month(month)
 
 
 def _month_key(year: int, month_number: int) -> str:
     return f"{year:04d}-{month_number:02d}"
 
 
-def _validated_day_key(
-    value: Any, year: int, month_number: int
-) -> str | None:
-    if value is None:
-        return None
-    try:
-        day = dt.date.fromisoformat(str(value))
-    except ValueError:
-        _LOGGER.warning("Skipped malformed daily usage date")
-        return None
-    if day.year != year or day.month != month_number:
-        _LOGGER.warning(
-            "Skipped daily usage date %s outside requested month %04d-%02d",
-            day.isoformat(),
-            year,
-            month_number,
-        )
-        return None
-    return day.isoformat()
-
-
 def _nonnegative_finite(value: Any) -> float | None:
-    if value is None or isinstance(value, bool):
-        return None
-    try:
-        number = float(value)
-    except (TypeError, ValueError):
-        return None
-    if not math.isfinite(number) or number < 0:
-        return None
-    return number
+    return finite_number(value, nonnegative=True)
 
 
 def _expected_dates(year: int, month_number: int) -> set[str]:
@@ -612,7 +548,7 @@ def _utcnow_iso() -> str:
 
 
 def _csg_today() -> dt.date:
-    return dt.datetime.now(dt.UTC).astimezone(_CSG_TIME_ZONE).date()
+    return csg_today()
 
 
 def _normalize_history_progress(raw: Any) -> dict[str, Any]:

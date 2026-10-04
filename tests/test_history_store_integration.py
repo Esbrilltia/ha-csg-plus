@@ -362,9 +362,8 @@ def test_malformed_month_row_does_not_poison_year_or_valid_months(rig, bad):
         data = (await objects.billing._async_update_data())["account"]
         assert data[SUFFIX_THIS_YEAR_KWH] == 30
         assert data[SUFFIX_THIS_YEAR_COST] == 18
-        # Preserve the legacy display parser, even for its double-hyphen match.
-        expected_cost = STATE_UNAVAILABLE if bad == {"month": "2026--08"} else 6
-        assert data[SUFFIX_LAST_MONTH_COST] == expected_cost
+        # B1: malformed candidates cannot hide the valid canonical month bill.
+        assert data[SUFFIX_LAST_MONTH_COST] == 6
         assert set(objects.history._data["accounts"]["account"]["monthly_bills"]) == {"2026-07", "2026-08"}
 
     asyncio.run(exercise())
@@ -536,7 +535,9 @@ def test_monthly_conflict_permutations_and_repeated_refetch_preserve_old_fact(
             ] * (refresh + 1)
             # Only July's first insertion saves; conflicts and the refetch add no I/O.
             assert rig.history_io == {"save": 1, "readback": 1}
-            assert data[SUFFIX_LAST_MONTH_COST] == order[0][1]
+            # B1: this batch's conflicted month has no display candidate either.
+            assert data[SUFFIX_LAST_MONTH_KWH] == STATE_UNAVAILABLE
+            assert data[SUFFIX_LAST_MONTH_COST] == STATE_UNAVAILABLE
             assert data[SUFFIX_THIS_YEAR_KWH] == 60
             assert data[SUFFIX_THIS_YEAR_COST] == 33
 

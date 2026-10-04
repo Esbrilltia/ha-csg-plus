@@ -14,6 +14,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 
 import pytest
+from homeassistant.const import STATE_UNAVAILABLE
 from homeassistant.exceptions import HomeAssistantError
 from requests import RequestException
 
@@ -682,7 +683,7 @@ def test_bill_revision_from_separate_refetch_and_incomplete_reconciliation(rig):
     run(scenario())
 
 
-def test_billing_uses_shared_requested_year_guard_without_changing_display(recent_rig, caplog):
+def test_billing_uses_shared_requested_year_guard_and_conflict_display(recent_rig, caplog):
     recent_rig.client.years["account", 2026] = (1, 2, [
         {"month": "202508", "kwh": 99, "charge": 88},
         {"month": "202608", "kwh": 3, "charge": 4},
@@ -697,6 +698,6 @@ def test_billing_uses_shared_requested_year_guard_without_changing_display(recen
         await objects.billing._add_year_data(recent_rig.client, account, data)
         assert objects.history.monthly_bill("account", (2025, 8)) == old
         assert objects.history.monthly_bill("account", (2026, 8)) is None
-        assert data[SUFFIX_LAST_MONTH_COST] == 4
+        assert data[SUFFIX_LAST_MONTH_COST] == STATE_UNAVAILABLE
     run(scenario())
     assert "outside requested year" in caplog.text
