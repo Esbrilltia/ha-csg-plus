@@ -179,6 +179,26 @@ revisit criteria. New records have their own collection. Implementation passes
 are `IMPLEMENTED_PENDING_REVIEW`; independent closure needs reviewer, exact HEAD
 and evidence. Empty set difference establishes completeness, not zero risk.
 
+Group `candidate_commit` identifies the implementation step; independent review
+binds to the final frozen `reviewed_head` and its actual `reviewed_tree`. Closure
+must use that reviewed HEAD, reviewer and at least one identical review evidence
+reference/hash pair. The `ancestor_with_reviewed_tree` gate reads real Git objects
+for CLOSED records: candidate and reviewed HEAD must be commits, candidate must
+be an ancestor of reviewed HEAD, its actual tree must match, and the review must
+precede the ledger checkout. This permits a later ledger-only review record to
+refer to the frozen implementation without a self-referential commit. Ancestry
+does not prove correctness of later code changes; final-HEAD independent review
+does. Missing Git history fails diagnostically rather than skipping. Current
+records remain unreviewed/unclosed and need no historical object reads in shallow
+CI; any future closure checkout must provide its required history.
+
+Reproduce the engineering checks with the unchanged locked environment:
+`uv sync --all-groups --locked`, `uv run python -m compileall custom_components tests`,
+`uv run pytest -q`, `uv run python tests/test_historical_findings_ledger.py`, and
+`git diff --check`. Record the complete HEAD/tree, command, environment and test/
+logging warnings. Group evidence and final CI checkout must be distinguished;
+pull-request CI may check a synthetic merge with Fixed Base.
+
 Deferred performance, lane retention, extra sync requests, minute guard and
 physical disk ownership/exit limits remain explicit. HACS/hassfest Actions,
 real cloud coexistence and real HA/Python 3.14.6 acceptance remain unverified.

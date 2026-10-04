@@ -12,6 +12,8 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
+from types import SimpleNamespace
 
 import pytest
 
@@ -46,6 +48,8 @@ CLASS_COUNTS = {
 }
 HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
+REVIEW_BINDING_POLICY = "ancestor_with_reviewed_tree"
+REPOSITORY_PATH = LEDGER_PATH.parents[2]
 
 
 def fingerprint(value: object) -> str:
@@ -64,13 +68,46 @@ def validate_evidence(evidence: object, *, required: bool, label: str) -> None:
     require(not required or bool(evidence), f"{label}: missing evidence")
     for item in evidence:
         require(isinstance(item, dict), f"{label}: evidence needs a reference/hash pair")
-        require(bool(item.get("ref")), f"{label}: missing evidence reference")
-        require(bool(HEX64.fullmatch(item.get("sha256", ""))), f"{label}: missing evidence hash")
+        require(isinstance(item.get("ref"), str) and bool(item["ref"].strip()), f"{label}: missing evidence reference")
+        require(isinstance(item.get("sha256"), str) and bool(HEX64.fullmatch(item["sha256"])), f"{label}: missing evidence hash")
 
 
-def reconcile_ledger(ledger: dict) -> dict:
+def git_output(repository: Path, *arguments: str) -> str:
+    """Read actual objects; never fetch or accept missing shallow history."""
+    result = subprocess.run(
+        ["git", "-C", str(repository), *arguments],
+        capture_output=True, text=True, timeout=15, check=False,
+    )
+    require(result.returncode == 0, "review binding Git object unavailable; provide required history")
+    return result.stdout.strip()
+
+
+def verify_closed_git_binding(repository: Path, candidate: str, reviewed: str, reviewed_tree: str) -> None:
+    """Bind closure to the reviewed commit/tree and real implementation ancestry."""
+    for commit in (candidate, reviewed):
+        require(git_output(repository, "cat-file", "-t", commit) == "commit", "review binding object is not a commit")
+    require(
+        git_output(repository, "rev-parse", "--verify", f"{reviewed}^{{tree}}") == reviewed_tree,
+        "reviewed tree does not match actual Git tree",
+    )
+    current_head = git_output(repository, "rev-parse", "--verify", "HEAD")
+    require(git_output(repository, "cat-file", "-t", current_head) == "commit", "ledger checkout HEAD is not a commit")
+    for ancestor, descendant, message in (
+        (candidate, reviewed, "implementation candidate is not an ancestor of reviewed HEAD"),
+        (reviewed, current_head, "reviewed HEAD is not an ancestor of ledger checkout"),
+    ):
+        result = subprocess.run(
+            ["git", "-C", str(repository), "merge-base", "--is-ancestor", ancestor, descendant],
+            capture_output=True, text=True, timeout=15, check=False,
+        )
+        require(result.returncode in (0, 1), "review binding Git ancestry unavailable; provide required history")
+        require(result.returncode == 0, message)
+
+
+def reconcile_ledger(ledger: dict, *, repository: Path = REPOSITORY_PATH) -> dict:
     """Reject lost provenance or unsupported closure; report set and risk separately."""
     require(ledger.get("schema_version") == 1, "unknown ledger schema")
+    require(ledger.get("review_binding_policy") == REVIEW_BINDING_POLICY, "unknown review binding policy")
     baseline = ledger["baseline"]
     require(baseline["commit"] == BASE and baseline["tree"] == TREE, "baseline object drift")
     require(baseline["input_ledger_sha256"] == INPUT_HASH, "input ledger hash drift")
@@ -107,6 +144,7 @@ def reconcile_ledger(ledger: dict) -> dict:
 
     active = [record for record in records if record["beta1_classification"] in ACTIVE_CLASSES]
     require(len(active) == baseline["active_source_record_count"] == 25, "active source count drift")
+    closed_bindings = []
     for record in records + additions:
         finding_id = record["finding_id"]
         require(record["source_report_id"] in source_map, f"{finding_id}: unresolved source")
@@ -128,8 +166,9 @@ def reconcile_ledger(ledger: dict) -> dict:
         require(review["status"] in {"NOT_PERFORMED", "PENDING", "PASSED", "FAILED"}, f"{finding_id}: invalid independent review state")
         reviewed = review["status"] in {"PASSED", "FAILED"}
         require(not reviewed or (bool(review["reviewer"]) and bool(HEX40.fullmatch(review["reviewed_head"] or ""))), f"{finding_id}: incomplete independent review")
+        require(not reviewed or (isinstance(review.get("reviewed_tree"), str) and bool(HEX40.fullmatch(review["reviewed_tree"]))), f"{finding_id}: missing reviewed tree")
         if not reviewed:
-            require(review["reviewer"] is None and review["reviewed_head"] is None and not review["evidence"], f"{finding_id}: fabricated unperformed review")
+            require(review["reviewer"] is None and review["reviewed_head"] is None and review.get("reviewed_tree") is None and not review["evidence"], f"{finding_id}: fabricated unperformed review")
         validate_evidence(review["evidence"], required=reviewed, label=f"{finding_id} review")
 
         closure = record["independent_closure"]
@@ -137,10 +176,15 @@ def reconcile_ledger(ledger: dict) -> dict:
         closed = closure["status"] == "CLOSED"
         if closed:
             require(review["status"] == "PASSED" and implemented, f"{finding_id}: closure requires reviewed implementation")
-            require(closure["closed_commit"] == review["reviewed_head"] == implementation["candidate_commit"] and closure["reviewer"] == review["reviewer"], f"{finding_id}: closure identity mismatch")
+            require(closure["closed_commit"] == review["reviewed_head"] and closure["reviewer"] == review["reviewer"], f"{finding_id}: closure identity mismatch")
         else:
             require(closure["closed_commit"] is None and closure["reviewer"] is None and not closure["evidence"], f"{finding_id}: incomplete closure fields")
         validate_evidence(closure["evidence"], required=closed, label=f"{finding_id} closure")
+        if closed:
+            review_pairs = {(item["ref"], item["sha256"]) for item in review["evidence"]}
+            closure_pairs = {(item["ref"], item["sha256"]) for item in closure["evidence"]}
+            require(bool(review_pairs & closure_pairs), f"{finding_id}: closure evidence is not bound to review evidence")
+            closed_bindings.append((implementation["candidate_commit"], review["reviewed_head"], review["reviewed_tree"]))
 
         acceptance = record["risk_acceptance"]
         require(acceptance["decision"] in {None, "ACCEPTED", "REJECTED"}, f"{finding_id}: invalid risk acceptance")
@@ -149,6 +193,12 @@ def reconcile_ledger(ledger: dict) -> dict:
         if not decided:
             require(acceptance["owner"] is None and acceptance["reason"] is None and acceptance["expires_at"] is None and not acceptance["review_triggers"] and not acceptance["evidence"], f"{finding_id}: fabricated acceptance decision")
         validate_evidence(acceptance["evidence"], required=decided, label=f"{finding_id} risk acceptance")
+
+    # An unclosed ledger needs no historical Git objects, including shallow CI.
+    # Validate after every structural check so malformed evidence is diagnosed
+    # before a missing object. Each final binding is verified once per group.
+    for binding in sorted(set(closed_bindings)):
+        verify_closed_git_binding(repository, *binding)
 
     remaining = [record for record in active if record["independent_closure"]["status"] != "CLOSED"]
     return {
@@ -160,6 +210,65 @@ def reconcile_ledger(ledger: dict) -> dict:
 @pytest.fixture
 def ledger() -> dict:
     return json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def git_objects(tmp_path):
+    """A separate real Git object graph; never touch repository refs or tags."""
+    repository = tmp_path / "synthetic-binding-repository"
+    repository.mkdir()
+
+    def git(*arguments, input=None):
+        result = subprocess.run(
+            ["git", "-C", str(repository), "-c", "user.name=Synthetic reviewer",
+             "-c", "user.email=synthetic@example.invalid", *arguments],
+            input=input, capture_output=True, text=True, timeout=15, check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        return result.stdout.strip()
+
+    git("init", "--quiet")
+
+    def tree(content):
+        blob = git("hash-object", "-w", "--stdin", input=content)
+        return git("mktree", input=f"100644 blob {blob}\tsynthetic.txt\n")
+
+    def commit(tree_hash, message, parent=None):
+        arguments = ["commit-tree", tree_hash]
+        if parent is not None:
+            arguments.extend(["-p", parent])
+        return git(*arguments, input=message + "\n")
+
+    initial_tree = tree("synthetic base\n")
+    candidate_tree = tree("synthetic group implementation\n")
+    reviewed_tree = tree("synthetic final implementation\n")
+    ledger_tree = tree("synthetic later review record\n")
+    base = commit(initial_tree, "test(quality): create synthetic base")
+    candidate = commit(candidate_tree, "test(quality): create synthetic group implementation", base)
+    reviewed = commit(reviewed_tree, "test(quality): create synthetic reviewed implementation", candidate)
+    ledger_commit = commit(ledger_tree, "test(quality): record synthetic review", reviewed)
+    sibling = commit(reviewed_tree, "test(quality): create synthetic sibling candidate", base)
+    git("update-ref", "HEAD", ledger_commit)
+    return SimpleNamespace(repository=repository, git=git, tree=tree, commit=commit,
+        base=base, candidate=candidate, reviewed=reviewed, reviewed_tree=reviewed_tree,
+        candidate_tree=candidate_tree, ledger_commit=ledger_commit, ledger_tree=ledger_tree,
+        sibling=sibling)
+
+
+def close_synthetic_record(ledger, objects):
+    record = next(item for item in ledger["findings"] if item["finding_id"] == "R1-B4")
+    evidence = {"ref": "synthetic-independent-review-result", "sha256": "2" * 64}
+    record["implementation"] |= {"status": "IMPLEMENTED_PENDING_REVIEW", "candidate_commit": objects.candidate}
+    record["acceptance"]["evidence"] = [evidence.copy()]
+    record["independent_review"] = {
+        "status": "PASSED", "reviewer": "synthetic-reviewer", "reviewed_head": objects.reviewed,
+        "reviewed_tree": objects.reviewed_tree, "evidence": [evidence.copy()],
+    }
+    record["independent_closure"] = {
+        "status": "CLOSED", "closed_commit": objects.reviewed,
+        "reviewer": "synthetic-reviewer", "evidence": [evidence.copy()],
+    }
+    return record
 
 
 def test_historical_set_and_remaining_risk_are_reported_separately(ledger, capsys):
@@ -193,6 +302,9 @@ def test_historical_set_and_remaining_risk_are_reported_separately(ledger, capsy
     ("implementation_evidence", "missing evidence"),
     ("review_without_evidence", "missing evidence"),
     ("unperformed_reviewer", "fabricated unperformed review"),
+    ("unperformed_tree", "fabricated unperformed review"),
+    ("missing_reviewed_tree", "missing reviewed tree"),
+    ("binding_policy", "unknown review binding policy"),
     ("closure_without_review", "closure requires reviewed implementation"),
     ("partial_closure", "incomplete closure fields"),
     ("acceptance", "incomplete acceptance decision"),
@@ -239,9 +351,16 @@ def test_gate_rejects_loss_or_unsupported_risk_changes(ledger, mutation, message
         record["implementation"] |= {"status": "IMPLEMENTED_PENDING_REVIEW", "candidate_commit": "1" * 40}
         record["acceptance"]["evidence"] = []
     elif mutation == "review_without_evidence":
-        record["independent_review"] |= {"status": "PASSED", "reviewer": "synthetic-reviewer", "reviewed_head": "1" * 40, "evidence": []}
+        record["independent_review"] |= {"status": "PASSED", "reviewer": "synthetic-reviewer", "reviewed_head": "1" * 40, "reviewed_tree": "2" * 40, "evidence": []}
     elif mutation == "unperformed_reviewer":
         record["independent_review"] = {"status": "NOT_PERFORMED", "reviewer": "synthetic-reviewer", "reviewed_head": None, "evidence": []}
+    elif mutation == "unperformed_tree":
+        record["independent_review"]["reviewed_tree"] = "2" * 40
+    elif mutation == "missing_reviewed_tree":
+        record["independent_review"] |= {"status": "PASSED", "reviewer": "synthetic-reviewer", "reviewed_head": "1" * 40, "evidence": [{"ref": "synthetic-review", "sha256": "2" * 64}]}
+        record["independent_review"].pop("reviewed_tree", None)
+    elif mutation == "binding_policy":
+        ledger["review_binding_policy"] = "candidate_equals_reviewed_head"
     elif mutation == "closure_without_review":
         record["independent_closure"] |= {"status": "CLOSED", "closed_commit": "1" * 40, "reviewer": "synthetic-reviewer", "evidence": [{"ref": "synthetic-review", "sha256": "2" * 64}]}
     elif mutation == "partial_closure":
@@ -277,17 +396,12 @@ def test_implemented_candidates_still_count_as_pending_independent_review(ledger
 
 
 @pytest.mark.parametrize("missing", ["ref", "sha256"])
-def test_independent_closure_requires_complete_matching_evidence(ledger, missing):
-    record = next(item for item in ledger["findings"] if item["finding_id"] == "R1-B4")
-    evidence = {"ref": "synthetic-review-result", "sha256": "2" * 64}
-    record["implementation"] |= {"status": "IMPLEMENTED_PENDING_REVIEW", "candidate_commit": "1" * 40}
-    record["acceptance"]["evidence"] = [evidence.copy()]
-    record["independent_review"] = {"status": "PASSED", "reviewer": "synthetic-reviewer", "reviewed_head": "1" * 40, "evidence": [evidence.copy()]}
-    record["independent_closure"] = {"status": "CLOSED", "closed_commit": "1" * 40, "reviewer": "synthetic-reviewer", "evidence": [evidence.copy()]}
-    assert "R1-B4" not in reconcile_ledger(ledger)["remaining_risk"]["finding_ids"]
+def test_independent_closure_requires_complete_matching_evidence(ledger, git_objects, missing):
+    record = close_synthetic_record(ledger, git_objects)
+    assert "R1-B4" not in reconcile_ledger(ledger, repository=git_objects.repository)["remaining_risk"]["finding_ids"]
     del record["independent_closure"]["evidence"][0][missing]
     with pytest.raises(ValueError, match="missing evidence"):
-        reconcile_ledger(ledger)
+        reconcile_ledger(ledger, repository=git_objects.repository)
 
 
 def test_public_ledger_contains_no_private_paths_or_source_payloads(ledger):
@@ -298,6 +412,102 @@ def test_public_ledger_contains_no_private_paths_or_source_payloads(ledger):
     assert "original_evidence" not in public_text
     assert "original_description" not in public_text
     assert "authorization_context" not in public_text
+
+
+def test_closure_accepts_group_ancestor_and_later_review_record_without_tree_self_reference(ledger, git_objects):
+    record = close_synthetic_record(ledger, git_objects)
+    assert git_objects.candidate != git_objects.reviewed != git_objects.ledger_commit
+    assert git_objects.reviewed_tree != git_objects.ledger_tree
+    report = reconcile_ledger(ledger, repository=git_objects.repository)
+    assert "R1-B4" not in report["remaining_risk"]["finding_ids"]
+    assert record["implementation"]["candidate_commit"] == git_objects.candidate
+    assert record["independent_review"]["reviewed_head"] == git_objects.reviewed
+    assert record["independent_review"]["reviewed_tree"] == git_objects.reviewed_tree
+
+
+def test_closure_accepts_same_candidate_and_reviewed_commit(ledger, git_objects):
+    record = close_synthetic_record(ledger, git_objects)
+    record["implementation"]["candidate_commit"] = git_objects.reviewed
+    assert "R1-B4" not in reconcile_ledger(ledger, repository=git_objects.repository)["remaining_risk"]["finding_ids"]
+
+
+@pytest.mark.parametrize("mutation,message", [
+    ("same_tree_sibling", "implementation candidate is not an ancestor"),
+    ("reversed_ancestry", "implementation candidate is not an ancestor"),
+    ("candidate_tree_object", "object is not a commit"),
+    ("reviewed_tree_object", "object is not a commit"),
+    ("missing_candidate", "Git object unavailable"),
+    ("missing_reviewed", "Git object unavailable"),
+    ("wrong_reviewed_tree", "reviewed tree does not match"),
+    ("checkout_not_descendant", "reviewed HEAD is not an ancestor of ledger checkout"),
+    ("closed_at_group", "closure identity mismatch"),
+    ("wrong_reviewer", "closure identity mismatch"),
+    ("closure_hash_drift", "closure evidence is not bound"),
+    ("closure_reference_drift", "closure evidence is not bound"),
+])
+def test_closure_rejects_actual_git_or_review_binding_drift(ledger, git_objects, mutation, message):
+    record = close_synthetic_record(ledger, git_objects)
+    if mutation == "same_tree_sibling":
+        record["implementation"]["candidate_commit"] = git_objects.sibling
+    elif mutation == "reversed_ancestry":
+        record["implementation"]["candidate_commit"] = git_objects.ledger_commit
+    elif mutation == "candidate_tree_object":
+        record["implementation"]["candidate_commit"] = git_objects.candidate_tree
+    elif mutation == "reviewed_tree_object":
+        record["independent_review"]["reviewed_head"] = git_objects.reviewed_tree
+        record["independent_closure"]["closed_commit"] = git_objects.reviewed_tree
+    elif mutation == "missing_candidate":
+        record["implementation"]["candidate_commit"] = "0" * 40
+    elif mutation == "missing_reviewed":
+        record["independent_review"]["reviewed_head"] = "0" * 40
+        record["independent_closure"]["closed_commit"] = "0" * 40
+    elif mutation == "wrong_reviewed_tree":
+        record["independent_review"]["reviewed_tree"] = git_objects.candidate_tree
+    elif mutation == "checkout_not_descendant":
+        git_objects.git("update-ref", "HEAD", git_objects.sibling)
+    elif mutation == "closed_at_group":
+        record["independent_closure"]["closed_commit"] = git_objects.candidate
+    elif mutation == "wrong_reviewer":
+        record["independent_closure"]["reviewer"] = "synthetic-other-reviewer"
+    elif mutation == "closure_hash_drift":
+        record["independent_closure"]["evidence"][0]["sha256"] = "3" * 64
+    elif mutation == "closure_reference_drift":
+        record["independent_closure"]["evidence"][0]["ref"] = "synthetic-implementation-test"
+    with pytest.raises(ValueError, match=message):
+        reconcile_ledger(ledger, repository=git_objects.repository)
+
+
+@pytest.mark.parametrize("reviewed_tree", [None, "", "2" * 39, "g" * 40, False, {}])
+def test_performed_review_requires_complete_tree_even_without_closure(ledger, tmp_path, reviewed_tree):
+    record = next(item for item in ledger["findings"] if item["finding_id"] == "R1-B4")
+    record["independent_review"] |= {
+        "status": "PASSED", "reviewer": "synthetic-reviewer", "reviewed_head": "1" * 40,
+        "reviewed_tree": reviewed_tree, "evidence": [{"ref": "synthetic-review", "sha256": "2" * 64}],
+    }
+    with pytest.raises(ValueError, match="missing reviewed tree"):
+        reconcile_ledger(ledger, repository=tmp_path / "not-a-repository")
+
+
+@pytest.mark.parametrize("review_status", ["NOT_PERFORMED", "PASSED", "FAILED"])
+def test_unclosed_ledger_does_not_require_historical_git_objects(ledger, tmp_path, review_status):
+    record = next(item for item in ledger["findings"] if item["finding_id"] == "R1-B4")
+    if review_status != "NOT_PERFORMED":
+        record["independent_review"] |= {
+            "status": review_status, "reviewer": "synthetic-reviewer", "reviewed_head": "1" * 40,
+            "reviewed_tree": "2" * 40, "evidence": [{"ref": "synthetic-review", "sha256": "2" * 64}],
+        }
+    report = reconcile_ledger(ledger, repository=tmp_path / "not-a-repository")
+    assert "R1-B4" in report["remaining_risk"]["finding_ids"]
+
+
+@pytest.mark.parametrize("field,value", [("ref", []), ("ref", {}), ("ref", True),
+    ("sha256", []), ("sha256", {}), ("sha256", False)])
+def test_evidence_pair_binding_rejects_unsafe_container_types(ledger, field, value):
+    record = next(item for item in ledger["findings"] if item["finding_id"] == "R1-B4")
+    record["acceptance"]["evidence"] = [{"ref": "synthetic-evidence", "sha256": "2" * 64}]
+    record["acceptance"]["evidence"][0][field] = value
+    with pytest.raises(ValueError, match="missing evidence"):
+        reconcile_ledger(ledger)
 
 
 if __name__ == "__main__":
