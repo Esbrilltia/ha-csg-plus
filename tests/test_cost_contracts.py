@@ -82,7 +82,7 @@ def test_client_debug_logs_never_dump_account_payload_auth_or_response(caplog):
     client.auth_token = token
     client.customer_number = number
     client._common_headers = {}
-    client._session = SimpleNamespace(post=Mock(return_value=SimpleNamespace(status_code=200, content=json.dumps({"account": number, "address": address, "token": token}).encode(), headers={})))
+    client._session = SimpleNamespace(post=Mock(return_value=SimpleNamespace(status_code=200, content=json.dumps({"sta": "00", "data": {"account": number, "address": address, "token": token}}).encode(), headers={})))
     with caplog.at_level(logging.DEBUG):
         client._make_request("charge/getAnalyzeFeeDetails", {"account": number, "token": token})
         with pytest.raises(CSGAPIError):
