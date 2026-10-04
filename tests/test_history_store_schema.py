@@ -74,6 +74,14 @@ BAD_PAYLOADS = [
     ("reconciliation-nan-difference", payload("monthly_reconciliation", {MONTH: {"difference_kwh": "NaN"}})),
     ("reconciliation-state", payload("monthly_reconciliation", {MONTH: {"usage_state": "other"}})),
     ("reconciliation-time", payload("monthly_reconciliation", {MONTH: {"checked_at": None}})),
+    ("freshness-null", payload("monthly_reconciliation", {MONTH: {"freshness": None}})),
+    ("freshness-list", payload("monthly_reconciliation", {MONTH: {"freshness": []}})),
+    ("freshness-state", payload("monthly_reconciliation", {MONTH: {"freshness": {"state": "other"}}})),
+    ("freshness-invalid-date", payload("monthly_reconciliation", {MONTH: {"freshness": {"checked_business_date": "2026-02-30"}}})),
+    ("freshness-noncanonical-date", payload("monthly_reconciliation", {MONTH: {"freshness": {"checked_business_date": "20260903"}}})),
+    ("freshness-signature-type", payload("monthly_reconciliation", {MONTH: {"freshness": {"facts_signature": False}}})),
+    ("freshness-signature-length", payload("monthly_reconciliation", {MONTH: {"freshness": {"facts_signature": "0" * 63}}})),
+    ("freshness-signature-nonhex", payload("monthly_reconciliation", {MONTH: {"freshness": {"facts_signature": "g" * 64}}})),
 ]
 
 
@@ -288,13 +296,51 @@ def test_real_generated_v1_facts_coverage_reconciliation_progress_and_extensions
             assert fresh.daily_usage(ACCOUNT, DAY) == {"kwh": 0, "source": "daily_usage_api", "updated_at": "first"}
             assert fresh.monthly_bill(ACCOUNT, (2026, 8))["cost_cny"] == 0
             assert fresh.daily_coverage(ACCOUNT, (2026, 8)) == row["daily_coverage"][MONTH]
-            assert fresh.monthly_reconciliation(ACCOUNT, (2026, 8)) == row["monthly_reconciliation"][MONTH]
+            reconciliation = fresh.monthly_reconciliation(ACCOUNT, (2026, 8))
+            assert reconciliation["persistence_confirmed"] is True
+            assert {key: value for key, value in reconciliation.items() if key != "persistence_confirmed"} == row["monthly_reconciliation"][MONTH]
             assert fresh.history_progress(ACCOUNT)["completed_daily_months"] == [MONTH]
             assert fresh.history_progress(ACCOUNT)["bill_year_scopes"] == {}
             assert snapshot(path) == before and real_storage_io.writes == writes_before
             observe("legitimate-v1-reload", {"before": before, "after": snapshot(path),
                     "facts_progress_extensions_preserved": True, "save_calls_during_reload": 0,
                     "progress_invalid_members_remain_retryable": True})
+        finally:
+            await hass.async_stop(force=True)
+    asyncio.run(scenario())
+
+
+def test_real_partial_freshness_binding_is_compatible_and_unknown_without_rewriting_file(tmp_path, monkeypatch):
+    """G4 additive known fields do not turn a partial V1 result into corruption."""
+    async def scenario():
+        hass = HomeAssistant(str(tmp_path))
+        store = CSGHistoryStore(hass, "synthetic-partial-freshness-entry")
+        path = Path(store._store.path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        row = {"daily_sum_kwh": 0, "billed_usage_kwh": None, "difference_kwh": None,
+               "usage_state": "pending", "checked_at": "first",
+               "freshness": {"state": "current", "checked_business_date": "2026-09-03"}}
+        data = {"accounts": {ACCOUNT: {"daily_usage": {}, "monthly_bills": {}, "daily_coverage": {},
+                 "monthly_reconciliation": {MONTH: row}, "sync": {}}}}
+        path.write_text(json.dumps(envelope(store, data)), encoding="utf-8")
+        before = snapshot(path)
+        save = AsyncMock(side_effect=AssertionError("Compatible partial freshness must not save"))
+        monkeypatch.setattr(store._store, "async_save", save)
+        try:
+            await store.async_load()
+            assert store._data == data
+            result = store.monthly_reconciliation(ACCOUNT, (2026, 8))
+            assert result["freshness"] == dict(row["freshness"], state="unknown")
+            assert "facts_signature" not in result["freshness"]
+            assert result["checked_at"] == row["checked_at"]
+            assert result["usage_state"] == row["usage_state"]
+            assert result["persistence_confirmed"] is True
+            assert store._data == data
+            assert snapshot(path) == before
+            save.assert_not_awaited()
+            observe("compatible-partial-freshness", {"before": before, "after": snapshot(path),
+                    "save_calls": 0, "freshness_state": result["freshness"]["state"],
+                    "checked_at_preserved": True, "facts_signature_not_fabricated": True})
         finally:
             await hass.async_stop(force=True)
     asyncio.run(scenario())

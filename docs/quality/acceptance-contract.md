@@ -144,6 +144,25 @@ read facts independently of reconciliation and no unbounded recomputation is
 introduced. The concrete compatible choice and behavior evidence are recorded
 before G4 production changes.
 
+The compatible G4 choice keeps storage V1 and adds optional `freshness` to each
+comparison: `state`, Shanghai `checked_business_date`, and `facts_signature`.
+The deterministic SHA256 binds sorted daily dates/values and the independent
+monthly usage/cost values, excluding account identifiers, source and timestamps.
+An actual daily or monthly revision marks an existing comparison stale before
+saving. Reversal remains stale until explicit reconciliation; missing/invalid or
+same-value refetch does not invalidate or recalculate. Legacy incomplete bindings
+are unknown; a changed fact signature or Shanghai business date is stale. An
+exact same-date verified reload can remain current. Getters return detached views
+and do not save or rewrite comparison timestamps.
+
+Getter-only `persistence_confirmed` reflects the existing Store-wide pending-save
+flag and is never persisted. It distinguishes an applicable in-memory calculation
+from confirmed durability, conservatively including another account's pending
+write. Explicit reconciliation retains the existing comparison states/tolerance,
+creates a new binding, and returns that same view after the save attempt. Bridge
+continues reading facts independently. No scheduler or automatic recomputation
+is added.
+
 ## Group and risk gates (A2)
 
 G0 introduces this contract and the 77-record public ledger and set gate; G1

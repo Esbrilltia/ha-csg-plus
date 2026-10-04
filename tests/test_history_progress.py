@@ -107,7 +107,8 @@ def test_untrusted_progress_preserves_facts_isolates_accounts_and_reloads(rig, s
         for field in FACT_FIELDS[:3]:
             assert fresh.history_store._data["accounts"][ACCOUNT][field] == old[field]
         reconciled = fresh.history_store.monthly_reconciliation(ACCOUNT, MONTH)
-        assert {key: value for key, value in reconciled.items() if key != "checked_at"} == {
+        assert reconciled["persistence_confirmed"] is True
+        assert {key: value for key, value in reconciled.items() if key not in {"checked_at", "persistence_confirmed"}} == {
             key: value for key, value in old["monthly_reconciliation"]["2024-02"].items() if key != "checked_at"
         }
         assert await integration.async_unload_entry(rig.hass, rig.entry)

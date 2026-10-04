@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import calendar
 import datetime as dt
+import hashlib
+import json
 import logging
 import math
 from collections.abc import Iterable, Mapping
@@ -172,6 +174,8 @@ class CSGHistoryStore:
 
             if inserted or updated or coverage_changed:
                 self._persistence_pending = True
+            if inserted or updated:
+                self._invalidate_reconciliation(account_data, month_key)
             await self._async_save_pending()
 
             changed_dates = inserted + updated
@@ -228,6 +232,7 @@ class CSGHistoryStore:
             merged["updated_at"] = _utcnow_iso()
             bills[month_key] = merged
             self._persistence_pending = True
+            self._invalidate_reconciliation(account_data, month_key)
             await self._async_save_pending()
             return True
 
@@ -294,13 +299,18 @@ class CSGHistoryStore:
                 "difference_kwh": difference,
                 "usage_state": usage_state,
                 "checked_at": _utcnow_iso(),
+                "freshness": {
+                    "state": "current",
+                    "checked_business_date": today.isoformat(),
+                    "facts_signature": self._facts_signature(account_data, year, month_number),
+                },
             }
             account_data["monthly_reconciliation"][
                 month_key
             ] = reconciliation
             self._persistence_pending = True
             await self._async_save_pending()
-            return deepcopy(reconciliation)
+            return self.monthly_reconciliation(account, (year, month_number))
 
     async def _async_save_pending(self) -> None:
         """Verify writes using public Store APIs; caller holds the fact lock.
@@ -483,12 +493,57 @@ class CSGHistoryStore:
     def monthly_reconciliation(
         self, account: str, month: tuple[int, int]
     ) -> dict[str, Any] | None:
-        """Return the latest reconciliation result for a month."""
+        """Return the last comparison with its current applicability/durability.
+
+        Business values describe the last explicit calculation. Freshness is a
+        conservative detached view; reading never recomputes or saves it.
+        """
         year, month_number = _validate_month(month)
-        row = self._account(account)["monthly_reconciliation"].get(
+        account_data = self._account(account)
+        row = account_data["monthly_reconciliation"].get(
             _month_key(year, month_number)
         )
-        return deepcopy(row) if row is not None else None
+        if row is None:
+            return None
+        result = deepcopy(row)
+        binding = result.setdefault("freshness", {})
+        if (
+            binding.get("state") not in ("current", "stale")
+            or not binding.get("facts_signature")
+            or not binding.get("checked_business_date")
+        ):
+            binding["state"] = "unknown"
+        elif (
+            binding.get("state") != "current"
+            or binding["checked_business_date"] != _csg_today().isoformat()
+            or binding["facts_signature"] != self._facts_signature(account_data, year, month_number)
+        ):
+            binding["state"] = "stale"
+        result["persistence_confirmed"] = not self._persistence_pending
+        return result
+
+    @staticmethod
+    def _invalidate_reconciliation(account_data: dict[str, Any], month_key: str) -> None:
+        """Retain invalidation even if a later revision restores old values."""
+        if (row := account_data["monthly_reconciliation"].get(month_key)) is not None:
+            row.setdefault("freshness", {})["state"] = "stale"
+
+    @staticmethod
+    def _facts_signature(account_data: dict[str, Any], year: int, month_number: int) -> str:
+        """Bind business values without source identity or observation times."""
+        daily = sorted(
+            (day, float(row["kwh"]))
+            for day, row in account_data["daily_usage"].items()
+            if _day_in_month(day, year, month_number)
+        )
+        bill = account_data["monthly_bills"].get(_month_key(year, month_number), {})
+        values = {
+            "daily": daily,
+            "usage_kwh": _nonnegative_finite(bill.get("usage_kwh")),
+            "cost_cny": _nonnegative_finite(bill.get("cost_cny")),
+        }
+        encoded = json.dumps(values, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        return hashlib.sha256(encoded.encode()).hexdigest()
 
     def _account(self, account: str) -> dict[str, Any]:
         account_data = self._data.setdefault("accounts", {}).setdefault(
@@ -644,6 +699,19 @@ def _validate_history_payload(payload: Any) -> None:
                     ):
                         _schema_error(f"{row_position}.usage_state", "invalid reconciliation state")
                     _schema_strings(row, row_position, ("checked_at",))
+                    if "freshness" in row:
+                        binding_position = f"{row_position}.freshness"
+                        binding = _schema_mapping(row["freshness"], binding_position)
+                        if "state" in binding and binding["state"] not in ("current", "stale", "unknown"):
+                            _schema_error(f"{binding_position}.state", "invalid freshness state")
+                        if "checked_business_date" in binding:
+                            _schema_day(binding["checked_business_date"], f"{binding_position}.checked_business_date")
+                        if "facts_signature" in binding:
+                            signature = binding["facts_signature"]
+                            if not isinstance(signature, str) or len(signature) != 64 or any(
+                                character not in "0123456789abcdef" for character in signature
+                            ):
+                                _schema_error(f"{binding_position}.facts_signature", "invalid fact binding")
 
 
 def _preflight_history_file(path: str, key: str) -> bool:
