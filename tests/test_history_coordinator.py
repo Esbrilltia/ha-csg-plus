@@ -14,6 +14,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 
 import pytest
+from homeassistant.const import STATE_UNAVAILABLE
 from homeassistant.exceptions import HomeAssistantError
 from requests import RequestException
 
@@ -125,6 +126,15 @@ def rig(monkeypatch):
     hass = SimpleNamespace(data={}, async_add_executor_job=execute)
     clock = SimpleNamespace(now=dt.datetime(2024, 3, 1, tzinfo=dt.UTC))
     monkeypatch.setattr(store_module, "Store", Storage)
+    async def memory_preflight(history):
+        # Only the keyed-memory adapter substitutes the disk preflight boundary.
+        # Its genuine persisted payload still obeys the V1 business validator.
+        payload = persisted.get(history._store.key)
+        if payload is not None:
+            store_module._validate_history_payload(payload)
+        return payload is None
+
+    monkeypatch.setattr(CSGHistoryStore, "async_preflight_load", memory_preflight)
     monkeypatch.setattr(module.CSGClient, "load", Mock(return_value=client))
     monkeypatch.setattr(module.dt_util, "utcnow", lambda: clock.now)
     monkeypatch.setattr(store_module, "_csg_today", lambda: clock.now.astimezone(module._CSG_TIME_ZONE).date())
@@ -460,6 +470,8 @@ def test_one_task_per_entry_and_reload_after_nonblocking_setup(rig, monkeypatch)
     async def forward(entry, platforms):
         assert rig.tasks == [] or all(task.done() for task in rig.tasks)
         stages.append("entities_ready")
+        # This scheduling adapter explicitly represents successful sensor setup.
+        rig.hass.data[DOMAIN][entry.entry_id]["sensor_setup_complete"] = True
     rig.hass.config_entries = SimpleNamespace(
         async_forward_entry_setups=AsyncMock(side_effect=forward),
         async_unload_platforms=AsyncMock(return_value=True),
@@ -682,7 +694,7 @@ def test_bill_revision_from_separate_refetch_and_incomplete_reconciliation(rig):
     run(scenario())
 
 
-def test_billing_uses_shared_requested_year_guard_without_changing_display(recent_rig, caplog):
+def test_billing_uses_shared_requested_year_guard_and_conflict_display(recent_rig, caplog):
     recent_rig.client.years["account", 2026] = (1, 2, [
         {"month": "202508", "kwh": 99, "charge": 88},
         {"month": "202608", "kwh": 3, "charge": 4},
@@ -697,6 +709,6 @@ def test_billing_uses_shared_requested_year_guard_without_changing_display(recen
         await objects.billing._add_year_data(recent_rig.client, account, data)
         assert objects.history.monthly_bill("account", (2025, 8)) == old
         assert objects.history.monthly_bill("account", (2026, 8)) is None
-        assert data[SUFFIX_LAST_MONTH_COST] == 4
+        assert data[SUFFIX_LAST_MONTH_COST] == STATE_UNAVAILABLE
     run(scenario())
     assert "outside requested year" in caplog.text

@@ -147,6 +147,7 @@ class EnergyStatisticsBridge:
         self._accepting = True
         self._owned: set[str] = set()
         self._currency_warned = False
+        self._retained_future_warned = False
         self._lanes: dict[str, _ImportLane] = hass.data.setdefault(_IMPORT_LANES, {})
         self._unsubscribe = None
         if self.enabled:
@@ -366,7 +367,17 @@ class EnergyStatisticsBridge:
                             _csg_today(),
                         )
                     else:
-                        desired = build_statistics(await self.history_store.async_daily_usage_snapshot(account))
+                        facts = await self.history_store.async_daily_usage_snapshot(account)
+                        today = _csg_today()
+                        eligible = {day: fact for day, fact in facts.items()
+                                    if dt.date.fromisoformat(day) <= today}
+                        if len(eligible) != len(facts) and not self._retained_future_warned:
+                            self._retained_future_warned = True
+                            _LOGGER.warning(
+                                "Retained daily facts future relative to Asia/Shanghai business day "
+                                "are excluded from statistics materialization",
+                            )
+                        desired = build_statistics(eligible)
                     self._require_cost_currency(statistic_id)
                     existing = await recorder.async_add_executor_job(partial(
                         get_metadata, self.hass, statistic_ids={statistic_id},

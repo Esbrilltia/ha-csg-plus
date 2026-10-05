@@ -9,7 +9,6 @@ from __future__ import annotations
 import datetime
 import json
 import logging
-import math
 import random
 import time
 from base64 import b64decode, b64encode
@@ -23,6 +22,10 @@ from Crypto.Cipher import AES, PKCS1_v1_5
 from Crypto.PublicKey import RSA
 
 from .const import *
+from ..history_helpers import (
+    ResponseValidationError, csg_today, finite_number, response_rows,
+    validate_history_month, validate_history_year, validated_daily_date,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -255,9 +258,22 @@ class CSGClient:
                 raise CSGHTTPError(response.status_code)
 
             json_str = response.content.decode("utf-8", errors="ignore")
-            json_str = json_str[json_str.find("{") : json_str.rfind("}") + 1]
-            json_data = json.loads(json_str)
+            try:
+                json_data = json.loads(json_str)
+            except json.JSONDecodeError:
+                # Only the fixed legacy wrapper in the compatibility contract
+                # may surround a complete object. Never salvage braces from
+                # damaged JSON containers or arbitrary surrounding text.
+                prefix, suffix = "legacy-prefix ", " legacy-suffix"
+                if not json_str.startswith(prefix + "{") or not json_str.endswith("}" + suffix):
+                    raise ResponseValidationError("Invalid response envelope JSON") from None
+                framed = json_str[len(prefix) : -len(suffix)]
+                try:
+                    json_data = json.loads(framed)
+                except json.JSONDecodeError:
+                    raise ResponseValidationError("Invalid response envelope JSON") from None
             response_data = json_data
+            self._response_status(response_data)
             _LOGGER.debug(
                 "_make_request: %s, response received",
                 path,
@@ -267,6 +283,24 @@ class CSGClient:
             return response.headers, response_data
 
         raise NotImplementedError()
+
+    @staticmethod
+    def _response_status(response_data: object) -> str:
+        """Validate protocol structure without exposing response values."""
+        if not isinstance(response_data, Mapping):
+            raise ResponseValidationError("Invalid response envelope container")
+        status = response_data.get(JSON_KEY_STA)
+        if not isinstance(status, str) or not status.strip():
+            raise ResponseValidationError("Invalid response envelope status")
+        return status
+
+    def _validated_response_data(self, api_path: str, response_data: object, expected_type: type):
+        """Require success data only for APIs whose contract needs it."""
+        if self._response_status(response_data) != RESP_STA_SUCCESS:
+            self._handle_unsuccessful_response(api_path, response_data)
+        if JSON_KEY_DATA not in response_data or not isinstance(response_data[JSON_KEY_DATA], expected_type):
+            raise ResponseValidationError("Invalid response envelope data")
+        return response_data[JSON_KEY_DATA]
 
     def _handle_unsuccessful_response(self, api_path: str, response_data: dict):
         """Handles sta=!RESP_STA_SUCCESS"""
@@ -453,9 +487,7 @@ class CSGClient:
         # custom_headers = {"funid": "100t002"}
         custom_headers = {}
         _, resp_data = self._make_request(path, payload, custom_headers=custom_headers)
-        if resp_data[JSON_KEY_STA] == RESP_STA_SUCCESS:
-            return resp_data[JSON_KEY_DATA]
-        self._handle_unsuccessful_response(path, resp_data)
+        return self._validated_response_data(path, resp_data, Mapping)
 
     def api_query_day_electric_charge_by_m_point(
         self,
@@ -533,9 +565,7 @@ class CSGClient:
         path = "charge/queryUserAccountNumberSurplus"
         payload = {JSON_KEY_AREA_CODE: area_code, JSON_KEY_ELE_CUST_ID: ele_customer_id}
         _, resp_data = self._make_request(path, payload)
-        if resp_data[JSON_KEY_STA] == RESP_STA_SUCCESS:
-            return resp_data[JSON_KEY_DATA]
-        self._handle_unsuccessful_response(path, resp_data)
+        return self._validated_response_data(path, resp_data, list)
 
     def api_get_fee_analyze_details(
         self, year: int, area_code: str, ele_customer_id: str
@@ -551,9 +581,7 @@ class CSGClient:
             JSON_KEY_METERING_POINT_ID: None,  # this is set to null in api
         }
         _, resp_data = self._make_request(path, payload)
-        if resp_data[JSON_KEY_STA] == RESP_STA_SUCCESS:
-            return resp_data[JSON_KEY_DATA]
-        self._handle_unsuccessful_response(path, resp_data)
+        return self._validated_response_data(path, resp_data, Mapping)
 
     def api_query_day_electric_by_m_point_yesterday(
         self,
@@ -670,14 +698,14 @@ class CSGClient:
 
     def get_month_daily_usage_detail(
         self, account: CSGElectricityAccount, year_month: tuple[int, int]
-    ) -> tuple[float, list[dict[str, str | float]]]:
+    ) -> tuple[float | None, list[dict[str, str | float]]]:
         """Get monthly daily facts and date-only markers for invalid observations.
 
         A marker preserves upstream coverage for tariff completeness; it has
         no kWh and must never be stored or displayed as a daily usage fact.
         """
 
-        year, month = year_month
+        year, month = validate_history_month(year_month)
 
         resp_data = self.api_query_day_electric_by_m_point(
             year,
@@ -686,25 +714,20 @@ class CSGClient:
             account.ele_customer_id,
             account.metering_point_id,
         )
-        month_total_kwh = float(resp_data["totalPower"])
+        resp_data, raw_days = response_rows(resp_data, "result", "daily usage")
+        today = csg_today()
+        month_total_kwh = finite_number(resp_data.get("totalPower"), nonnegative=True)
         by_day = []
-        for d_data in resp_data["result"]:
+        for d_data in raw_days:
             if not isinstance(d_data, Mapping):
                 continue
-            try:
-                day = datetime.date.fromisoformat(d_data.get("date"))
-            except (TypeError, ValueError):
+            day_key = validated_daily_date(d_data.get("date"), (year, month), today)
+            if day_key is None:
                 continue
-            row: dict[str, str | float] = {WF_ATTR_DATE: day.isoformat()}
+            row: dict[str, str | float] = {WF_ATTR_DATE: day_key}
             by_day.append(row)
-            power = d_data.get("power")
-            if isinstance(power, bool):
-                continue
-            try:
-                daily_kwh = float(power)
-            except (TypeError, ValueError, OverflowError):
-                continue
-            if math.isfinite(daily_kwh) and daily_kwh >= 0:
+            daily_kwh = finite_number(d_data.get("power"), nonnegative=True)
+            if daily_kwh is not None:
                 row[WF_ATTR_KWH] = daily_kwh
         return month_total_kwh, by_day
 
@@ -777,46 +800,46 @@ class CSGClient:
 
     def get_balance_and_arrears(
         self, account: CSGElectricityAccount
-    ) -> tuple[float, float]:
+    ) -> tuple[float | None, float | None]:
         """Get account balance and arrears"""
 
         resp_data = self.api_query_account_surplus(
             account.area_code, account.ele_customer_id
         )
-        balance = resp_data[0]["balance"]
-        arrears = resp_data[0]["arrears"]
-        return float(balance), float(arrears)
+        if not isinstance(resp_data, list):
+            raise ResponseValidationError("Invalid account observations response container")
+        if not resp_data:
+            return None, None
+        if not isinstance(resp_data[0], Mapping):
+            raise ResponseValidationError("Invalid account observations row")
+        return finite_number(resp_data[0].get("balance")), finite_number(resp_data[0].get("arrears"))
 
     def get_year_month_stats(
         self, account: CSGElectricityAccount, year
-    ) -> tuple[float, float, list[dict[str, str | float]]]:
+    ) -> tuple[float | None, float | None, list[dict[str, str | float]]]:
         """Get year total kWh, year total charge, kWh/charge by month in current year"""
 
+        year = validate_history_year(year)
         resp_data = self.api_get_fee_analyze_details(
             year, account.area_code, account.ele_customer_id
         )
 
-        total_year_kwh = resp_data["totalBillingElectricity"]
-        total_year_charge = resp_data["totalActualAmount"]
+        resp_data, raw_months = response_rows(resp_data, "electricAndChargeList", "monthly bill")
+        total_year_kwh = finite_number(resp_data.get("totalBillingElectricity"), nonnegative=True)
+        total_year_charge = finite_number(resp_data.get("totalActualAmount"))
         by_month = []
-        for m_data in resp_data["electricAndChargeList"]:
+        for m_data in raw_months:
             if not isinstance(m_data, Mapping) or JSON_KEY_YEAR_MONTH not in m_data:
                 continue
             row = {WF_ATTR_MONTH: m_data[JSON_KEY_YEAR_MONTH]}
             for raw_key, key in (
                 ("actualTotalAmount", WF_ATTR_CHARGE), ("billingElectricity", WF_ATTR_KWH)
             ):
-                value = m_data.get(raw_key)
-                if value is None or isinstance(value, bool):
-                    continue
-                try:
-                    number = float(value)
-                except (TypeError, ValueError, OverflowError):
-                    continue
-                if math.isfinite(number) and number >= 0:
+                number = finite_number(m_data.get(raw_key), nonnegative=True)
+                if number is not None:
                     row[key] = number
             by_month.append(row)
-        return float(total_year_charge), float(total_year_kwh), by_month
+        return total_year_charge, total_year_kwh, by_month
 
     def get_yesterday_kwh(self, account: CSGElectricityAccount) -> float:
         """Get power consumption(kwh) of yesterday"""

@@ -16,7 +16,7 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, Sen
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_UNAVAILABLE, UnitOfEnergy
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_change, async_track_time_interval, async_track_utc_time_change
@@ -63,7 +63,6 @@ from .csg_client import (
     WF_ATTR_CHARGE,
     WF_ATTR_DATE,
     WF_ATTR_KWH,
-    WF_ATTR_MONTH,
     WF_ATTR_LADDER,
     WF_ATTR_LADDER_REMAINING_KWH,
     WF_ATTR_LADDER_START_DATE,
@@ -76,6 +75,7 @@ from .csg_client import (
 from .history_store import CSGHistoryStore
 from .energy_statistics import EnergyStatisticsBridge
 from .history_helpers import (
+    collect_daily_usage_candidates,
     collect_monthly_bill_candidates as _collect_monthly_bill_candidates,
 )
 from .tariff import TariffProfile, current_ladder, resolve_tariff_profile
@@ -104,52 +104,68 @@ class SensorDescription:
 
 
 REALTIME_DESCRIPTIONS = (
-    SensorDescription(SUFFIX_YESTERDAY_KWH, "yesterday_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-arrow-left"),
-    SensorDescription(SUFFIX_BAL, "balance", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:wallet"),
-    SensorDescription(SUFFIX_ARR, "arrears", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:cash-remove"),
+    SensorDescription(SUFFIX_YESTERDAY_KWH, "yesterday_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-arrow-left"),
+    SensorDescription(SUFFIX_BAL, "balance", SensorDeviceClass.MONETARY, "CNY", None, "mdi:wallet"),
+    SensorDescription(SUFFIX_ARR, "arrears", SensorDeviceClass.MONETARY, "CNY", None, "mdi:cash-remove"),
 )
 CURRENT_DESCRIPTIONS = (
     SensorDescription(SUFFIX_CURRENT_LADDER, "current_ladder", icon="mdi:stairs", attributes_key=ATTR_KEY_CURRENT_LADDER_START_DATE),
-    SensorDescription(SUFFIX_CURRENT_LADDER_REMAINING_KWH, "current_ladder_remaining", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:lightning-bolt-circle"),
+    SensorDescription(SUFFIX_CURRENT_LADDER_REMAINING_KWH, "current_ladder_remaining", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:lightning-bolt-circle"),
     SensorDescription(SUFFIX_CURRENT_LADDER_TARIFF, "current_ladder_tariff", unit="CNY/kWh", state_class=SensorStateClass.MEASUREMENT, icon="mdi:currency-cny", attributes_key=_KEY_TARIFF_ATTRIBUTES),
 )
 BILLING_DESCRIPTIONS = (
-    SensorDescription(SUFFIX_LATEST_DAY_KWH, "latest_settlement_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-check", ATTR_KEY_SETTLEMENT_DATE),
-    SensorDescription(SUFFIX_LATEST_DAY_COST, "latest_settlement_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-check", ATTR_KEY_SETTLEMENT_DATE),
-    SensorDescription(SUFFIX_THIS_MONTH_KWH, "this_month_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-month", ATTR_KEY_MONTH_BILLING_DELAY),
-    SensorDescription(SUFFIX_THIS_MONTH_COST, "this_month_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-month", ATTR_KEY_MONTH_BILLING_DELAY),
-    SensorDescription(SUFFIX_LAST_MONTH_KWH, "last_month_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-minus"),
-    SensorDescription(SUFFIX_LAST_MONTH_COST, "last_month_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-minus"),
-    SensorDescription(SUFFIX_THIS_YEAR_KWH, "this_year_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-range", ATTR_KEY_YEAR_BILLING_DELAY),
-    SensorDescription(SUFFIX_THIS_YEAR_COST, "this_year_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-range", ATTR_KEY_YEAR_BILLING_DELAY),
-    SensorDescription(SUFFIX_LAST_YEAR_KWH, "last_year_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, SensorStateClass.MEASUREMENT, "mdi:calendar-arrow-left"),
-    SensorDescription(SUFFIX_LAST_YEAR_COST, "last_year_cost", SensorDeviceClass.MONETARY, "CNY", SensorStateClass.MEASUREMENT, "mdi:calendar-arrow-left"),
+    SensorDescription(SUFFIX_LATEST_DAY_KWH, "latest_settlement_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-check", ATTR_KEY_SETTLEMENT_DATE),
+    SensorDescription(SUFFIX_LATEST_DAY_COST, "latest_settlement_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-check", ATTR_KEY_SETTLEMENT_DATE),
+    SensorDescription(SUFFIX_THIS_MONTH_KWH, "this_month_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-month", ATTR_KEY_MONTH_BILLING_DELAY),
+    SensorDescription(SUFFIX_THIS_MONTH_COST, "this_month_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-month", ATTR_KEY_MONTH_BILLING_DELAY),
+    SensorDescription(SUFFIX_LAST_MONTH_KWH, "last_month_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-minus"),
+    SensorDescription(SUFFIX_LAST_MONTH_COST, "last_month_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-minus"),
+    SensorDescription(SUFFIX_THIS_YEAR_KWH, "this_year_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-range", ATTR_KEY_YEAR_BILLING_DELAY),
+    SensorDescription(SUFFIX_THIS_YEAR_COST, "this_year_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-range", ATTR_KEY_YEAR_BILLING_DELAY),
+    SensorDescription(SUFFIX_LAST_YEAR_KWH, "last_year_usage", SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR, None, "mdi:calendar-arrow-left"),
+    SensorDescription(SUFFIX_LAST_YEAR_COST, "last_year_cost", SensorDeviceClass.MONETARY, "CNY", None, "mdi:calendar-arrow-left"),
 )
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up CSG sensors."""
-    if not entry.data[CONF_ELE_ACCOUNTS]:
-        return
-    history_store = hass.data[DOMAIN][entry.entry_id]["history_store"]
-    bridge = hass.data[DOMAIN][entry.entry_id].get("energy_statistics_bridge")
-    realtime = RealtimeCoordinator(hass, entry, history_store, bridge)
-    current = CurrentCoordinator(hass, entry)
-    billing = BillingCoordinator(hass, entry, history_store, bridge)
-    hass.data[DOMAIN][entry.entry_id]["realtime_coordinator"] = realtime
-    hass.data.setdefault(DOMAIN, {}).setdefault(entry.entry_id, {})[
-        "billing_coordinator"
-    ] = billing
-    await realtime.async_refresh()
-    await current.async_refresh()
-    await billing.async_refresh()
-    billing.start_daily_refresh()
-    entities: list[CSGSensor] = []
-    for account in entry.data[CONF_ELE_ACCOUNTS]:
-        entities.extend(CSGSensor(realtime, account, description) for description in REALTIME_DESCRIPTIONS)
-        entities.extend(CSGSensor(current, account, description) for description in CURRENT_DESCRIPTIONS)
-        entities.extend(CSGSensor(billing, account, description) for description in BILLING_DESCRIPTIONS)
-    async_add_entities(entities)
+    runtime = hass.data[DOMAIN][entry.entry_id]
+    runtime["sensor_setup_task"] = asyncio.current_task()
+    try:
+        if not entry.data[CONF_ELE_ACCOUNTS]:
+            runtime["sensor_setup_complete"] = True
+            return
+        history_store = runtime["history_store"]
+        bridge = runtime.get("energy_statistics_bridge")
+        realtime = runtime["realtime_coordinator"] = RealtimeCoordinator(hass, entry, history_store, bridge)
+        current = runtime["current_coordinator"] = CurrentCoordinator(hass, entry)
+        billing = runtime["billing_coordinator"] = BillingCoordinator(hass, entry, history_store, bridge)
+        await realtime.async_refresh()
+        await current.async_refresh()
+        await billing.async_refresh()
+        billing.start_daily_refresh()
+        entities: list[CSGSensor] = []
+        for account in entry.data[CONF_ELE_ACCOUNTS]:
+            entities.extend(CSGSensor(realtime, account, description) for description in REALTIME_DESCRIPTIONS)
+            entities.extend(CSGSensor(current, account, description) for description in CURRENT_DESCRIPTIONS)
+            entities.extend(CSGSensor(billing, account, description) for description in BILLING_DESCRIPTIONS)
+        before_tasks = set(getattr(entry, "_tasks", ()))
+        try:
+            async_add_entities(entities)
+        finally:
+            # Capture only the existing Core tasks submitted by this callback.
+            # Core may catch their failure after this coroutine has returned.
+            runtime["sensor_entity_tasks"] = tuple(set(getattr(entry, "_tasks", ())) - before_tasks)
+        runtime["sensor_setup_complete"] = True
+    except (Exception, asyncio.CancelledError) as err:
+        # Safe categories only: never retain exception text, payload or session.
+        runtime["sensor_setup_error"] = (
+            "auth" if isinstance(err, ConfigEntryAuthFailed)
+            else "retry" if isinstance(err, ConfigEntryNotReady)
+            else "cancelled" if isinstance(err, asyncio.CancelledError)
+            else type(err).__name__
+        )
+        raise
 
 
 class CSGSensor(CoordinatorEntity, SensorEntity):
@@ -502,20 +518,14 @@ class RealtimeCoordinator(CSGFactCoordinator):
                 if self.energy_statistics_bridge is not None:
                     self.energy_statistics_bridge.request_sync()
 
-                valid_days = [
-                    item
-                    for item in usage_days
-                    if item.get(WF_ATTR_DATE) is not None
-                    and item.get(WF_ATTR_KWH) is not None
-                ]
+                candidates = collect_daily_usage_candidates(
+                    usage_days, account.account_number, (year, month), today=today,
+                )
 
-                if not valid_days:
+                if not candidates:
                     continue
 
-                for item in valid_days:
-                    if str(item[WF_ATTR_DATE]) == yesterday:
-                        yesterday_usage = float(item[WF_ATTR_KWH])
-                        break
+                yesterday_usage = candidates.get(yesterday)
 
                 # Months are checked newest first. Once one contains published
                 # daily data, an older month cannot contain a newer reading.
@@ -745,10 +755,13 @@ class BillingCoordinator(CSGFactCoordinator):
                     self.energy_statistics_bridge.request_sync()
                 # The client also returns date-only coverage markers. Settlement
                 # selection uses valid facts; the markers are only for tariff.
-                daily_days = sorted(
-                    (item for item in usage_days if item.get(WF_ATTR_KWH) is not None),
-                    key=lambda item: str(item[WF_ATTR_DATE]),
+                candidates = collect_daily_usage_candidates(
+                    usage_days, account.account_number, (year, month),
                 )
+                daily_days = [
+                    {WF_ATTR_DATE: day, WF_ATTR_KWH: value}
+                    for day, value in candidates.items()
+                ]
 
                 values = (
                     usage_total,
@@ -827,7 +840,8 @@ class BillingCoordinator(CSGFactCoordinator):
     ) -> None:
         now = _csg_today()
         previous_month = now.replace(day=1) - dt.timedelta(days=1)
-        previous_month_key = f"{previous_month.year}{previous_month.month:02d}"
+        data[SUFFIX_LAST_MONTH_KWH] = STATE_UNAVAILABLE
+        data[SUFFIX_LAST_MONTH_COST] = STATE_UNAVAILABLE
 
         for year, usage_suffix, cost_suffix in (
             (
@@ -870,23 +884,14 @@ class BillingCoordinator(CSGFactCoordinator):
                 if bill_candidates and self.energy_statistics_bridge is not None:
                     self.energy_statistics_bridge.request_sync()
 
-                for month_data in by_month:
-                    if not isinstance(month_data, Mapping):
-                        continue
-                    month_key = str(
-                        month_data.get(WF_ATTR_MONTH, "")
-                    ).replace("-", "")
-
-                    if month_key == previous_month_key:
-                        data[SUFFIX_LAST_MONTH_KWH] = month_data.get(
-                            WF_ATTR_KWH,
-                            STATE_UNAVAILABLE,
-                        )
-                        data[SUFFIX_LAST_MONTH_COST] = month_data.get(
-                            WF_ATTR_CHARGE,
-                            STATE_UNAVAILABLE,
-                        )
-                        break
+                previous_bill = bill_candidates.get((previous_month.year, previous_month.month))
+                if previous_bill is not None:
+                    data[SUFFIX_LAST_MONTH_KWH] = (
+                        previous_bill[0] if previous_bill[0] is not None else STATE_UNAVAILABLE
+                    )
+                    data[SUFFIX_LAST_MONTH_COST] = (
+                        previous_bill[1] if previous_bill[1] is not None else STATE_UNAVAILABLE
+                    )
 
                 if year == now.year:
                     billing_through = (

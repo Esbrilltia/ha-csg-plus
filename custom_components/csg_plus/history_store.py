@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import calendar
 import datetime as dt
+import hashlib
+import json
 import logging
 import math
 from collections.abc import Iterable, Mapping
@@ -12,17 +14,18 @@ from copy import deepcopy
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
-from zoneinfo import ZoneInfo
 
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.storage import Store
+from homeassistant.util import json as json_util
 
 from .const import DOMAIN
-from .csg_client import WF_ATTR_DATE, WF_ATTR_KWH
-from .history_helpers import parse_history_start_month
+from .history_helpers import (
+    collect_daily_usage_candidates, csg_today, finite_number,
+    parse_history_start_month, validate_history_month,
+)
 from .history_io import HistoryStorageHass
-from .utils import account_log_id
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +35,14 @@ DAILY_USAGE_SOURCE = "daily_usage_api"
 MONTHLY_BILL_SOURCE = "year_month_stats"
 _DAILY_VALUE_ABS_TOL = 1e-9
 _RECONCILIATION_ABS_TOL_KWH = Decimal("0.01")
-_CSG_TIME_ZONE = ZoneInfo("Asia/Shanghai")
+
+
+class HistoryStoreSchemaError(HomeAssistantError):
+    """An invalid history structure, without any raw payload in its message."""
+
+
+class HistoryStoreVersionError(HistoryStoreSchemaError):
+    """An unsupported wrapper version which must not be migrated implicitly."""
 
 
 @dataclass(frozen=True)
@@ -73,9 +83,27 @@ class CSGHistoryStore:
         self._lock = asyncio.Lock()
 
     async def async_load(self) -> None:
-        """Load persisted history facts."""
-        self._data = await self._store.async_load() or {"accounts": {}}
-        self._data.setdefault("accounts", {})
+        """Validate disk and native results before publishing persisted facts."""
+        missing = await self.async_preflight_load()
+        loaded = await self._store.async_load()
+        if loaded is None:
+            if not missing:
+                raise HistoryStoreSchemaError("Invalid history structure at data: missing native result") from None
+            loaded = {"accounts": {}}
+        _validate_history_payload(loaded)
+        loaded = dict(loaded)
+        loaded.setdefault("accounts", {})
+        self._data = loaded
+
+    async def async_preflight_load(self) -> bool:
+        """Reject corrupt existing files before Core can rename or migrate them.
+
+        The existing path-owned I/O delegate retains physical read ordering.
+        True means only that the file is absent; invalid existing data raises.
+        """
+        return await self._store.hass.async_add_executor_job(
+            _preflight_history_file, self._store.path, self._store.key,
+        )
 
     async def async_upsert_daily_usage(
         self,
@@ -92,40 +120,9 @@ class CSGHistoryStore:
         year, month_number = _validate_month(month)
         month_key = _month_key(year, month_number)
 
-        candidate_sets: dict[str, set[float]] = {}
-
-        for item in days:
-            day_key = _validated_day_key(
-                item.get(WF_ATTR_DATE), year, month_number
-            )
-            if day_key is None:
-                continue
-
-            value = _nonnegative_finite(item.get(WF_ATTR_KWH))
-            if value is None:
-                continue
-
-            candidate_sets.setdefault(day_key, set()).add(value)
-
-        candidates: dict[str, float] = {}
-        for day_key, values in candidate_sets.items():
-            # Approximate equality is not transitive. The full range must fit
-            # the tolerance, independent of which candidate arrived first.
-            smallest = min(values)
-            if not math.isclose(
-                smallest,
-                max(values),
-                rel_tol=0.0,
-                abs_tol=_DAILY_VALUE_ABS_TOL,
-            ):
-                _LOGGER.warning(
-                    "Conflicting daily usage values for %s on %s; skipped date",
-                    account_log_id(account),
-                    day_key,
-                )
-                continue
-            # Choose an actual source value, not an average or first arrival.
-            candidates[day_key] = smallest
+        candidates = collect_daily_usage_candidates(
+            days, account, (year, month_number), today=_csg_today(),
+        )
 
         async with self._lock:
             account_data = self._account(account)
@@ -177,6 +174,8 @@ class CSGHistoryStore:
 
             if inserted or updated or coverage_changed:
                 self._persistence_pending = True
+            if inserted or updated:
+                self._invalidate_reconciliation(account_data, month_key)
             await self._async_save_pending()
 
             changed_dates = inserted + updated
@@ -233,6 +232,7 @@ class CSGHistoryStore:
             merged["updated_at"] = _utcnow_iso()
             bills[month_key] = merged
             self._persistence_pending = True
+            self._invalidate_reconciliation(account_data, month_key)
             await self._async_save_pending()
             return True
 
@@ -299,13 +299,18 @@ class CSGHistoryStore:
                 "difference_kwh": difference,
                 "usage_state": usage_state,
                 "checked_at": _utcnow_iso(),
+                "freshness": {
+                    "state": "current",
+                    "checked_business_date": today.isoformat(),
+                    "facts_signature": self._facts_signature(account_data, year, month_number),
+                },
             }
             account_data["monthly_reconciliation"][
                 month_key
             ] = reconciliation
             self._persistence_pending = True
             await self._async_save_pending()
-            return deepcopy(reconciliation)
+            return self.monthly_reconciliation(account, (year, month_number))
 
     async def _async_save_pending(self) -> None:
         """Verify writes using public Store APIs; caller holds the fact lock.
@@ -488,12 +493,57 @@ class CSGHistoryStore:
     def monthly_reconciliation(
         self, account: str, month: tuple[int, int]
     ) -> dict[str, Any] | None:
-        """Return the latest reconciliation result for a month."""
+        """Return the last comparison with its current applicability/durability.
+
+        Business values describe the last explicit calculation. Freshness is a
+        conservative detached view; reading never recomputes or saves it.
+        """
         year, month_number = _validate_month(month)
-        row = self._account(account)["monthly_reconciliation"].get(
+        account_data = self._account(account)
+        row = account_data["monthly_reconciliation"].get(
             _month_key(year, month_number)
         )
-        return deepcopy(row) if row is not None else None
+        if row is None:
+            return None
+        result = deepcopy(row)
+        binding = result.setdefault("freshness", {})
+        if (
+            binding.get("state") not in ("current", "stale")
+            or not binding.get("facts_signature")
+            or not binding.get("checked_business_date")
+        ):
+            binding["state"] = "unknown"
+        elif (
+            binding.get("state") != "current"
+            or binding["checked_business_date"] != _csg_today().isoformat()
+            or binding["facts_signature"] != self._facts_signature(account_data, year, month_number)
+        ):
+            binding["state"] = "stale"
+        result["persistence_confirmed"] = not self._persistence_pending
+        return result
+
+    @staticmethod
+    def _invalidate_reconciliation(account_data: dict[str, Any], month_key: str) -> None:
+        """Retain invalidation even if a later revision restores old values."""
+        if (row := account_data["monthly_reconciliation"].get(month_key)) is not None:
+            row.setdefault("freshness", {})["state"] = "stale"
+
+    @staticmethod
+    def _facts_signature(account_data: dict[str, Any], year: int, month_number: int) -> str:
+        """Bind business values without source identity or observation times."""
+        daily = sorted(
+            (day, float(row["kwh"]))
+            for day, row in account_data["daily_usage"].items()
+            if _day_in_month(day, year, month_number)
+        )
+        bill = account_data["monthly_bills"].get(_month_key(year, month_number), {})
+        values = {
+            "daily": daily,
+            "usage_kwh": _nonnegative_finite(bill.get("usage_kwh")),
+            "cost_cny": _nonnegative_finite(bill.get("cost_cny")),
+        }
+        encoded = json.dumps(values, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        return hashlib.sha256(encoded.encode()).hexdigest()
 
     def _account(self, account: str) -> dict[str, Any]:
         account_data = self._data.setdefault("accounts", {}).setdefault(
@@ -545,48 +595,159 @@ class CSGHistoryStore:
         }
 
 
+def _schema_error(position: str, category: str) -> None:
+    raise HistoryStoreSchemaError(f"Invalid history structure at {position}: {category}") from None
+
+
+def _schema_mapping(value: Any, position: str) -> Mapping:
+    if not isinstance(value, Mapping):
+        _schema_error(position, "expected mapping")
+    return value
+
+
+def _schema_number(
+    value: Any, position: str, *, nonnegative: bool = True, nullable: bool = False,
+) -> None:
+    if nullable and value is None:
+        return
+    if finite_number(value, nonnegative=nonnegative) is None:
+        _schema_error(position, "invalid finite numeric value")
+
+
+def _schema_day(value: Any, position: str, month: tuple[int, int] | None = None) -> None:
+    if not isinstance(value, str):
+        _schema_error(position, "invalid calendar date")
+    try:
+        day = dt.date.fromisoformat(value)
+    except ValueError:
+        _schema_error(position, "invalid calendar date")
+    if day.isoformat() != value or (month is not None and (day.year, day.month) != month):
+        _schema_error(position, "invalid calendar date")
+
+
+def _schema_month(value: Any, position: str) -> tuple[int, int]:
+    try:
+        return parse_history_start_month(value)
+    except ValueError:
+        raise HistoryStoreSchemaError(f"Invalid history structure at {position}: invalid calendar month") from None
+
+
+def _schema_strings(row: Mapping, position: str, fields: tuple[str, ...]) -> None:
+    for field in fields:
+        if field in row and not isinstance(row[field], str):
+            _schema_error(f"{position}.{field}", "expected string")
+
+
+def _validate_history_payload(payload: Any) -> None:
+    """Check known V1 business fields without changing facts or progress.
+
+    Missing optional collections and unknown extension fields remain compatible.
+    Sync/progress retains its separately approved tolerant normalization path.
+    Structural locations deliberately omit all account, date and value keys.
+    """
+    payload = _schema_mapping(payload, "data")
+    accounts = _schema_mapping(payload.get("accounts", {}), "accounts")
+    for account, account_data in accounts.items():
+        if not isinstance(account, str):
+            _schema_error("accounts[*]", "expected string key")
+        account_data = _schema_mapping(account_data, "accounts[*]")
+        for collection in ("daily_usage", "monthly_bills", "daily_coverage", "monthly_reconciliation"):
+            position = f"accounts[*].{collection}"
+            rows = _schema_mapping(account_data.get(collection, {}), position)
+            for key, row in rows.items():
+                row_position = f"{position}[*]"
+                if collection == "daily_usage":
+                    _schema_day(key, row_position)
+                    row = _schema_mapping(row, row_position)
+                    _schema_number(row.get("kwh"), f"{row_position}.kwh")
+                    _schema_strings(row, row_position, ("source", "updated_at"))
+                    continue
+                month = _schema_month(key, row_position)
+                row = _schema_mapping(row, row_position)
+                if collection == "monthly_bills":
+                    if "usage_kwh" not in row and "cost_cny" not in row:
+                        _schema_error(row_position, "missing bill numeric field")
+                    for field in ("usage_kwh", "cost_cny"):
+                        if field in row:
+                            _schema_number(row[field], f"{row_position}.{field}")
+                    _schema_strings(row, row_position, ("source", "updated_at"))
+                elif collection == "daily_coverage":
+                    if "state" in row and row["state"] not in ("empty", "partial", "complete"):
+                        _schema_error(f"{row_position}.state", "invalid coverage state")
+                    maximum = calendar.monthrange(*month)[1]
+                    for field in ("expected_days", "valid_days"):
+                        if field in row and (type(row[field]) is not int or not 0 <= row[field] <= maximum):
+                            _schema_error(f"{row_position}.{field}", "invalid day count")
+                    if "missing_days" in row:
+                        if not isinstance(row["missing_days"], list):
+                            _schema_error(f"{row_position}.missing_days", "expected list")
+                        for day in row["missing_days"]:
+                            _schema_day(day, f"{row_position}.missing_days[*]", month)
+                    for field in ("first_valid_date", "last_valid_date"):
+                        if field in row and row[field] is not None:
+                            _schema_day(row[field], f"{row_position}.{field}", month)
+                else:
+                    for field in ("daily_sum_kwh", "billed_usage_kwh", "difference_kwh"):
+                        if field in row:
+                            _schema_number(
+                                row[field], f"{row_position}.{field}",
+                                nonnegative=field != "difference_kwh",
+                                nullable=field != "daily_sum_kwh",
+                            )
+                    if "usage_state" in row and row["usage_state"] not in (
+                        "pending", "not_comparable", "matched", "mismatch",
+                    ):
+                        _schema_error(f"{row_position}.usage_state", "invalid reconciliation state")
+                    _schema_strings(row, row_position, ("checked_at",))
+                    if "freshness" in row:
+                        binding_position = f"{row_position}.freshness"
+                        binding = _schema_mapping(row["freshness"], binding_position)
+                        if "state" in binding and binding["state"] not in ("current", "stale", "unknown"):
+                            _schema_error(f"{binding_position}.state", "invalid freshness state")
+                        if "checked_business_date" in binding:
+                            _schema_day(binding["checked_business_date"], f"{binding_position}.checked_business_date")
+                        if "facts_signature" in binding:
+                            signature = binding["facts_signature"]
+                            if not isinstance(signature, str) or len(signature) != 64 or any(
+                                character not in "0123456789abcdef" for character in signature
+                            ):
+                                _schema_error(f"{binding_position}.facts_signature", "invalid fact binding")
+
+
+def _preflight_history_file(path: str, key: str) -> bool:
+    """Read and validate with Core's JSON parser, without its recovery writes."""
+    try:
+        with open(path, "rb") as handle:
+            raw = handle.read()
+    except FileNotFoundError:
+        return True
+    try:
+        wrapper = json_util.json_loads(raw)
+    except ValueError:
+        raise HistoryStoreSchemaError("Invalid history structure at wrapper: invalid JSON") from None
+    wrapper = _schema_mapping(wrapper, "wrapper")
+    for field in ("version", "minor_version"):
+        value = wrapper.get(field, 1 if field == "minor_version" else None)
+        if type(value) is not int:
+            _schema_error(f"wrapper.{field}", "expected integer")
+        if value != 1:
+            raise HistoryStoreVersionError(f"Unsupported history storage version at wrapper.{field}") from None
+    if wrapper.get("key") != key:
+        _schema_error("wrapper.key", "mismatched storage key")
+    _validate_history_payload(wrapper.get("data"))
+    return False
+
+
 def _validate_month(month: tuple[int, int]) -> tuple[int, int]:
-    year, month_number = month
-    if year < 1 or not 1 <= month_number <= 12:
-        raise ValueError(f"Invalid month: {month!r}")
-    return year, month_number
+    return validate_history_month(month)
 
 
 def _month_key(year: int, month_number: int) -> str:
     return f"{year:04d}-{month_number:02d}"
 
 
-def _validated_day_key(
-    value: Any, year: int, month_number: int
-) -> str | None:
-    if value is None:
-        return None
-    try:
-        day = dt.date.fromisoformat(str(value))
-    except ValueError:
-        _LOGGER.warning("Skipped malformed daily usage date")
-        return None
-    if day.year != year or day.month != month_number:
-        _LOGGER.warning(
-            "Skipped daily usage date %s outside requested month %04d-%02d",
-            day.isoformat(),
-            year,
-            month_number,
-        )
-        return None
-    return day.isoformat()
-
-
 def _nonnegative_finite(value: Any) -> float | None:
-    if value is None or isinstance(value, bool):
-        return None
-    try:
-        number = float(value)
-    except (TypeError, ValueError):
-        return None
-    if not math.isfinite(number) or number < 0:
-        return None
-    return number
+    return finite_number(value, nonnegative=True)
 
 
 def _expected_dates(year: int, month_number: int) -> set[str]:
@@ -612,7 +773,7 @@ def _utcnow_iso() -> str:
 
 
 def _csg_today() -> dt.date:
-    return dt.datetime.now(dt.UTC).astimezone(_CSG_TIME_ZONE).date()
+    return csg_today()
 
 
 def _normalize_history_progress(raw: Any) -> dict[str, Any]:
