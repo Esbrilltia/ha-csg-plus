@@ -299,6 +299,14 @@ def test_residual_gate_rejects_scope_drift_and_fabricated_decisions(ledger, muta
         validate_residual_round_snapshot(ledger)
 
 
+def verify_history_origin(origin: str, expected_origin: str) -> None:
+    allowed = {expected_origin}
+    if expected_origin == "https://github.com/Esbrilltia/ha-csg-plus.git":
+        # actions/checkout uses the same GitHub repository URL without .git.
+        allowed.add("https://github.com/Esbrilltia/ha-csg-plus")
+    require(origin in allowed, "history setup origin differs from approved repository")
+
+
 def complete_checkout_history(repository: Path, *, expected_origin: str = "https://github.com/Esbrilltia/ha-csg-plus.git") -> None:
     """Explicit test/CLI setup for shallow checkout; validators never fetch.
 
@@ -308,8 +316,7 @@ def complete_checkout_history(repository: Path, *, expected_origin: str = "https
     if git_output(repository, "rev-parse", "--is-shallow-repository") == "false":
         return
     head = git_output(repository, "rev-parse", "HEAD")
-    require(git_output(repository, "remote", "get-url", "origin") == expected_origin,
-            "history setup origin differs from approved repository")
+    verify_history_origin(git_output(repository, "remote", "get-url", "origin"), expected_origin)
     result = subprocess.run(
         ["git", "-C", str(repository), "fetch", "--no-tags", "--no-write-fetch-head",
          "--unshallow", "origin", head],
@@ -839,6 +846,16 @@ def test_shallow_history_setup_preserves_checkout_and_real_object_gate(git_objec
     verify_closed_git_binding(clone, git_objects.candidate, git_objects.reviewed, git_objects.reviewed_tree)
     with pytest.raises(ValueError, match="Git object unavailable"):
         verify_closed_git_binding(clone, "0" * 40, git_objects.reviewed, git_objects.reviewed_tree)
+
+
+def test_history_origin_allows_only_the_fixed_repository_and_checkout_url():
+    expected = "https://github.com/Esbrilltia/ha-csg-plus.git"
+    verify_history_origin(expected, expected)
+    verify_history_origin(expected.removesuffix(".git"), expected)
+    for other in ("https://github.com/other/ha-csg-plus.git",
+                  expected + ".other", "https://example.invalid/Esbrilltia/ha-csg-plus.git"):
+        with pytest.raises(ValueError, match="origin differs"):
+            verify_history_origin(other, expected)
 
 
 @pytest.mark.parametrize("mutation", ["content", "path", "mode"])
