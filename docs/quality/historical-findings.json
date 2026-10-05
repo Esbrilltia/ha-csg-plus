@@ -5917,6 +5917,10 @@
           {
             "ref": "residual-remediation/g7-baseline-replay-binding.json",
             "sha256": "178e66491c80af457d11e7b0079f80a9c534376eeeb76ee7440a8e25af06738b"
+          },
+          {
+            "ref": "residual-remediation/g7-second-pass/implementation-binding.json",
+            "sha256": "204666455fdeb3a3f9ebbadb83d600f8c2ed8a62b84ac98ae17c27114b34cb55"
           }
         ]
       },
