@@ -261,10 +261,13 @@ class CSGClient:
             try:
                 json_data = json.loads(json_str)
             except json.JSONDecodeError:
-                # Preserve the existing server prefix/suffix framing. Parse a
-                # complete JSON body first so arrays/scalars cannot masquerade
-                # as an object merely by containing braces.
-                framed = json_str[json_str.find("{") : json_str.rfind("}") + 1]
+                # Only the fixed legacy wrapper in the compatibility contract
+                # may surround a complete object. Never salvage braces from
+                # damaged JSON containers or arbitrary surrounding text.
+                prefix, suffix = "legacy-prefix ", " legacy-suffix"
+                if not json_str.startswith(prefix + "{") or not json_str.endswith("}" + suffix):
+                    raise ResponseValidationError("Invalid response envelope JSON") from None
+                framed = json_str[len(prefix) : -len(suffix)]
                 try:
                     json_data = json.loads(framed)
                 except json.JSONDecodeError:
