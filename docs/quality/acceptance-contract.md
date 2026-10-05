@@ -225,9 +225,28 @@ be an ancestor of reviewed HEAD, its actual tree must match, and the review must
 precede the ledger checkout. This permits a later ledger-only review record to
 refer to the frozen implementation without a self-referential commit. Ancestry
 does not prove correctness of later code changes; final-HEAD independent review
-does. Missing Git history fails diagnostically rather than skipping. Current
-records remain unreviewed/unclosed and need no historical object reads in shallow
-CI; any future closure checkout must provide its required history.
+does. Missing Git history fails diagnostically rather than skipping.
+
+The final registration binds only the ten approved historical sources and
+IR-B1-01/IR-B1-03 to reviewed production HEAD
+`46083af1c250f8e0f54c30af233f628159640b49` (tree
+`03444b7b8c86209bf04f4de161bc3d69106a27c7`). Registration preserves the
+implementation snapshot except for those independent review/closure fields;
+all other reviews, historical classifications, implementation candidates,
+evidence bindings and risk decisions retain their values. Exactly 15 active
+historical source records remain NOT_CLOSED; both additional records are CLOSED.
+These are management source records, not 15 distinct new vulnerabilities.
+
+The reviewed-registration gate compares actual production path/mode/type/blob
+sets with the reviewed commit. Its test/CLI entry explicitly completes shallow
+checkout ancestry from the approved origin without changing checkout refs; the
+object validator itself never fetches, skips or substitutes missing objects.
+CI checks the exact independent advice reference/hash identities while private
+payloads remain outside Git. Local registration additionally verifies every
+implemented record's evidence file and byte hash using
+`uv run python tests/test_historical_findings_ledger.py --implementation-evidence-root <private-evidence-root>`.
+Passing these gates registers completed review; independent registration
+verification and a subsequent user merge decision are still required.
 
 Reproduce the engineering checks with the unchanged locked environment:
 `uv sync --all-groups --locked`, `uv run python -m compileall custom_components tests`,

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections import Counter
 from copy import deepcopy
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -57,6 +58,37 @@ HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 REVIEW_BINDING_POLICY = "ancestor_with_reviewed_tree"
 REPOSITORY_PATH = LEDGER_PATH.parents[2]
+# Registration authority: IR-B1-01_Second_Pass_Closure_Advice_2026-10-06.json,
+# SHA256 5c099ece8925ef115b907462c98a6a4a5428ca12c52329f1788ea9e2fedd62b6.
+# Only reference/hash identities are public; private audit payloads stay outside Git.
+REVIEWED_HEAD = "46083af1c250f8e0f54c30af233f628159640b49"
+REVIEWED_TREE = "03444b7b8c86209bf04f4de161bc3d69106a27c7"
+IMPLEMENTATION_SNAPSHOT_HASH = "40470e368751136f401c7fc8776e799731187560e28448b34dbdf3d6cabf6da2"
+REGISTRATION_REVIEWER = "Codex independent second-pass review Work; this session"
+APPROVED_HISTORICAL_CLOSURES = frozenset(
+    "M0-B1 M0-B6 M1-B2 M1-B3 M1-B4 M2-B2 M2-B3 M2-B4 M7-U5 R1-B4".split()
+)
+APPROVED_ADDITIONS = frozenset({"IR-B1-01", "IR-B1-03"})
+APPROVED_CLOSURES = APPROVED_HISTORICAL_CLOSURES | APPROVED_ADDITIONS
+REGISTRATION_REVISION = "FINAL-independent-review-closure-registration"
+EXPECTED_REMAINING = frozenset("""
+GATE-U1 GATE-U2 GATE-U3 M1-B5 M2-B5 M3-B1 M3R-B1 M3R-B2 M4-B2 M4-B3
+R1-B2 R1-C4 R2-B3 R2-B4 R2-C3
+""".split())
+REGISTRATION_EVIDENCE = [
+    {"ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+     "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"},
+    {"ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+     "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"},
+    {"ref": "evidence/second-pass-conclusion.json",
+     "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"},
+    {"ref": "evidence/scope-ledger-privacy.json",
+     "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"},
+    {"ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+     "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"},
+    {"ref": "evidence/end-summary.json",
+     "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"},
+]
 
 
 def fingerprint(value: object) -> str:
@@ -217,7 +249,7 @@ def reconcile_ledger(ledger: dict, *, repository: Path = REPOSITORY_PATH) -> dic
 
 
 def validate_residual_round_snapshot(ledger: dict) -> None:
-    """This implementation round has no authorization to apply review advice."""
+    """Retained control for the historical, unregistered implementation phase."""
     require(fingerprint(ledger["findings"]) == OLD_REVIEWED_ROWS_HASH,
             "old reviewed historical overlay changed during residual implementation")
     additions = ledger["additional_findings"]
@@ -267,8 +299,120 @@ def test_residual_gate_rejects_scope_drift_and_fabricated_decisions(ledger, muta
         validate_residual_round_snapshot(ledger)
 
 
+def complete_checkout_history(repository: Path, *, expected_origin: str = "https://github.com/Esbrilltia/ha-csg-plus.git") -> None:
+    """Explicit test/CLI setup for shallow checkout; validators never fetch.
+
+    Fetch the actual checkout's ancestry without changing refs or HEAD. A missing
+    object passed to a validator still fails, including in all negative controls.
+    """
+    if git_output(repository, "rev-parse", "--is-shallow-repository") == "false":
+        return
+    head = git_output(repository, "rev-parse", "HEAD")
+    require(git_output(repository, "remote", "get-url", "origin") == expected_origin,
+            "history setup origin differs from approved repository")
+    result = subprocess.run(
+        ["git", "-C", str(repository), "fetch", "--no-tags", "--no-write-fetch-head",
+         "--unshallow", "origin", head],
+        capture_output=True, text=True, timeout=90, check=False,
+    )
+    require(result.returncode == 0, "history setup failed; provide required history")
+    require(git_output(repository, "rev-parse", "HEAD") == head
+            and git_output(repository, "rev-parse", "--is-shallow-repository") == "false",
+            "history setup did not preserve checkout and complete ancestry")
+
+
+def implementation_snapshot(repository: Path = REPOSITORY_PATH) -> dict:
+    snapshot = json.loads(git_output(repository, "show", f"{REVIEWED_HEAD}:docs/quality/historical-findings.json"))
+    require(fingerprint(snapshot) == IMPLEMENTATION_SNAPSHOT_HASH,
+            "reviewed implementation snapshot drift")
+    validate_residual_round_snapshot(snapshot)
+    return snapshot
+
+
+def verify_implementation_evidence(ledger: dict, evidence_root: Path) -> None:
+    """Local byte gate; CI preserves these audited bindings without publishing bytes."""
+    root = evidence_root.resolve()
+    for row in ledger["findings"] + ledger["additional_findings"]:
+        if row["implementation"]["status"] != "IMPLEMENTED_PENDING_REVIEW":
+            continue
+        validate_evidence(row["acceptance"]["evidence"], required=True, label="implementation")
+        for evidence in row["acceptance"]["evidence"]:
+            path = (root / evidence["ref"]).resolve()
+            require(path.is_relative_to(root) and path.is_file(), "implementation evidence file unavailable")
+            require(hashlib.sha256(path.read_bytes()).hexdigest() == evidence["sha256"],
+                    "implementation evidence byte hash drift")
+
+
+def verify_production_freeze(repository: Path, reviewed: str = REVIEWED_HEAD) -> None:
+    before = git_output(repository, "ls-tree", "-r", "--full-tree", reviewed,
+                        "--", "custom_components/csg_plus")
+    after = git_output(repository, "ls-tree", "-r", "--full-tree", "HEAD",
+                       "--", "custom_components/csg_plus")
+    require(bool(before) and before == after, "production path/mode/type/blob drift")
+
+
+def validate_reviewed_registration(ledger: dict, *, repository: Path = REPOSITORY_PATH) -> dict:
+    """Permit exactly the independently approved twelve registrations, preserving all else."""
+    records = ledger["findings"] + ledger["additional_findings"]
+    require(ledger["ledger_revision"] == REGISTRATION_REVISION, "registration phase revision drift")
+    require(len(ledger["additional_findings"]) == 2
+            and {r["finding_id"] for r in ledger["additional_findings"]} == APPROVED_ADDITIONS,
+            "registration additional scope differs from approved two observations")
+    for field, state in (("independent_review", "PASSED"), ("independent_closure", "CLOSED")):
+        require({r["finding_id"] for r in records if r[field]["status"] == state} == APPROVED_CLOSURES,
+                "registration review/closure set differs from approved twelve")
+    require(all(r["risk_acceptance"]["decision"] is None for r in records),
+            "registration cannot accept risk")
+    for row in records:
+        if row["finding_id"] not in APPROVED_CLOSURES:
+            continue
+        evidence = REGISTRATION_EVIDENCE
+        if row["finding_id"] == "IR-B1-03":
+            evidence = [REGISTRATION_EVIDENCE[0], *REGISTRATION_EVIDENCE[2:]]
+        elif row["finding_id"] == "IR-B1-01":
+            evidence = REGISTRATION_EVIDENCE[2:]
+        require(row["independent_review"] == {
+            "status": "PASSED", "reviewer": REGISTRATION_REVIEWER,
+            "reviewed_head": REVIEWED_HEAD, "reviewed_tree": REVIEWED_TREE, "evidence": evidence,
+        }, f"{row['finding_id']}: registration review differs from independent advice")
+        require(row["independent_closure"] == {
+            "status": "CLOSED", "reviewer": REGISTRATION_REVIEWER,
+            "closed_commit": REVIEWED_HEAD, "evidence": evidence,
+        }, f"{row['finding_id']}: registration closure differs from independent advice")
+
+    before = implementation_snapshot(repository)
+    original = {r["finding_id"]: r for r in before["findings"] + before["additional_findings"]}
+    normalized = deepcopy(ledger)
+    normalized["ledger_revision"] = before["ledger_revision"]
+    for row in normalized["findings"] + normalized["additional_findings"]:
+        if row["finding_id"] in APPROVED_CLOSURES:
+            for field in ("independent_review", "independent_closure"):
+                row[field] = deepcopy(original[row["finding_id"]][field])
+    require(normalized == before, "registration changed frozen implementation/provenance or unapproved review")
+    report = reconcile_ledger(ledger, repository=repository)
+    remaining = report["remaining_risk"]
+    require(set(remaining["finding_ids"]) == EXPECTED_REMAINING
+            and remaining["not_independently_closed_count"] == 15,
+            "registration historical remaining set must be exactly fifteen")
+    require(remaining["additional_not_closed_count"] == 0,
+            "registration additional remaining must be zero")
+    verify_production_freeze(repository)
+    return report
+
+
+@pytest.fixture(scope="module", autouse=True)
+def registration_history():
+    complete_checkout_history(REPOSITORY_PATH)
+
+
 @pytest.fixture
 def ledger() -> dict:
+    # Keep all pre-registration controls meaningful on the actual frozen input.
+    return implementation_snapshot()
+
+
+@pytest.fixture
+def registered_ledger() -> dict:
     return json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
 
 
@@ -282,10 +426,11 @@ def git_objects(tmp_path):
         result = subprocess.run(
             ["git", "-C", str(repository), "-c", "user.name=Synthetic reviewer",
              "-c", "user.email=synthetic@example.invalid", *arguments],
-            input=input, capture_output=True, text=True, timeout=15, check=False,
+            input=input.encode() if input is not None else None,
+            capture_output=True, timeout=15, check=False,
         )
         assert result.returncode == 0, result.stderr
-        return result.stdout.strip()
+        return result.stdout.decode().strip()
 
     git("init", "--quiet")
 
@@ -573,8 +718,158 @@ def test_evidence_pair_binding_rejects_unsafe_container_types(ledger, field, val
         reconcile_ledger(ledger)
 
 
+def test_final_registration_preserves_review_authority_and_exact_remaining_sets(registered_ledger):
+    report = validate_reviewed_registration(registered_ledger)
+    assert report["set_completeness"]["located_count"] == 77
+    assert report["remaining_risk"]["historically_active_count"] == 25
+    assert set(report["remaining_risk"]["finding_ids"]) == EXPECTED_REMAINING
+    assert report["remaining_risk"]["additional_not_closed_count"] == 0
+    assert len(APPROVED_HISTORICAL_CLOSURES) == 10
+    assert len(APPROVED_ADDITIONS) == 2
+    test_public_ledger_contains_no_private_paths_or_source_payloads(registered_ledger)
+
+
+@pytest.mark.parametrize("mutation", [
+    "missing_registration", "extra_registration", "R1-B2", "R2-B4", "M1-B5",
+    "missing_addition", "extra_addition", "failed_review", "review_evidence_empty",
+    "closure_evidence_empty", "no_evidence_intersection", "wrong_head", "wrong_tree",
+    "evidence_ref", "evidence_hash", "reviewer", "closure_commit", "risk",
+    "classification", "source", "historical_metadata", "implementation_evidence",
+    "implementation_candidate", "severity", "observation", "unapproved_pending_review",
+    "remaining_set_swap", "additional_not_closed", "baseline", "risk_owner",
+])
+def test_registration_rejects_unapproved_fields_and_sets(registered_ledger, mutation):
+    rows = {r["finding_id"]: r for r in registered_ledger["findings"] + registered_ledger["additional_findings"]}
+    row = rows["R1-B4"]
+    if mutation == "missing_registration":
+        original = implementation_snapshot()["findings"]
+        before = next(r for r in original if r["finding_id"] == "R1-B4")
+        for field in ("independent_review", "independent_closure"):
+            row[field] = deepcopy(before[field])
+    elif mutation in {"extra_registration", "R1-B2", "R2-B4", "M1-B5", "remaining_set_swap"}:
+        target = rows[mutation if mutation in {"R1-B2", "R2-B4", "M1-B5"} else "R1-B2"]
+        for field in ("independent_review", "independent_closure"):
+            target[field] = deepcopy(row[field])
+        if mutation == "remaining_set_swap":
+            row["independent_closure"]["status"] = "NOT_CLOSED"
+    elif mutation == "missing_addition":
+        registered_ledger["additional_findings"].pop()
+    elif mutation == "extra_addition":
+        extra = deepcopy(registered_ledger["additional_findings"][0])
+        extra["finding_id"] = "EXTRA-SYNTHETIC"
+        registered_ledger["additional_findings"].append(extra)
+    elif mutation == "failed_review":
+        row["independent_review"]["status"] = "FAILED"
+    elif mutation in {"review_evidence_empty", "closure_evidence_empty", "no_evidence_intersection"}:
+        field = "independent_review" if mutation == "review_evidence_empty" else "independent_closure"
+        row[field]["evidence"] = ([] if mutation != "no_evidence_intersection" else
+                                  [{"ref": "synthetic-other-review", "sha256": "3" * 64}])
+    elif mutation in {"wrong_head", "wrong_tree", "reviewer"}:
+        field = {"wrong_head": "reviewed_head", "wrong_tree": "reviewed_tree", "reviewer": "reviewer"}[mutation]
+        row["independent_review"][field] = "0" * 40
+    elif mutation in {"evidence_ref", "evidence_hash"}:
+        field = "ref" if mutation == "evidence_ref" else "sha256"
+        # Drift both arrays together: intersection alone must not establish authority.
+        for key in ("independent_review", "independent_closure"):
+            row[key]["evidence"][0][field] = "3" * 64
+    elif mutation == "closure_commit":
+        row["independent_closure"]["closed_commit"] = row["implementation"]["candidate_commit"]
+    elif mutation == "risk":
+        row["risk_acceptance"]["decision"] = "ACCEPTED"
+    elif mutation == "risk_owner":
+        row["risk_acceptance"]["owner"] = "synthetic owner without decision"
+    elif mutation == "classification":
+        row["beta1_classification"] = "CLOSED"
+        row["historical_closure"]["classification"] = "CLOSED"
+    elif mutation == "source":
+        registered_ledger["sources"][0]["sha256"] = "0" * 64
+    elif mutation == "historical_metadata":
+        row["historical_closure"]["pull_requests"] = [999]
+    elif mutation == "implementation_evidence":
+        row["acceptance"]["evidence"] = []
+    elif mutation == "implementation_candidate":
+        row["implementation"]["candidate_commit"] = BASE
+    elif mutation == "severity":
+        rows["IR-B1-01"]["original_severity"] = "A"
+    elif mutation == "observation":
+        rows["IR-B1-01"]["source_observation"]["observed_head"] = BASE
+    elif mutation == "unapproved_pending_review":
+        rows["R1-B2"]["independent_review"]["status"] = "PENDING"
+    elif mutation == "additional_not_closed":
+        rows["IR-B1-01"]["independent_closure"]["status"] = "NOT_CLOSED"
+    elif mutation == "baseline":
+        registered_ledger["baseline"]["tree"] = "0" * 40
+    with pytest.raises(ValueError, match="registration"):
+        validate_reviewed_registration(registered_ledger)
+
+
+@pytest.mark.parametrize("mutation", ["missing", "hash", "escape"])
+def test_local_implementation_evidence_checks_actual_bytes(ledger, tmp_path, mutation):
+    evidence = tmp_path / "synthetic-evidence.json"
+    evidence.write_bytes(b'{"synthetic":true}\n')
+    pair = {"ref": evidence.name, "sha256": hashlib.sha256(evidence.read_bytes()).hexdigest()}
+    for row in ledger["findings"] + ledger["additional_findings"]:
+        if row["implementation"]["status"] == "IMPLEMENTED_PENDING_REVIEW":
+            row["acceptance"]["evidence"] = [deepcopy(pair)]
+    verify_implementation_evidence(ledger, tmp_path)
+    if mutation == "missing":
+        evidence.unlink()
+    elif mutation == "hash":
+        evidence.write_bytes(b'{"synthetic":false}\n')
+    else:
+        for row in ledger["findings"]:
+            if row["implementation"]["status"] == "IMPLEMENTED_PENDING_REVIEW":
+                row["acceptance"]["evidence"][0]["ref"] = "../outside-evidence.json"
+    with pytest.raises(ValueError, match="implementation evidence"):
+        verify_implementation_evidence(ledger, tmp_path)
+
+
+def test_shallow_history_setup_preserves_checkout_and_real_object_gate(git_objects, tmp_path):
+    clone = tmp_path / "synthetic-shallow"
+    origin = git_objects.repository.as_uri()
+    subprocess.run(["git", "clone", "--quiet", "--depth=1", origin, str(clone)],
+                   capture_output=True, text=True, timeout=30, check=True)
+    head = git_output(clone, "rev-parse", "HEAD")
+    with pytest.raises(ValueError, match="Git object unavailable"):
+        verify_closed_git_binding(clone, git_objects.candidate, git_objects.reviewed, git_objects.reviewed_tree)
+    with pytest.raises(ValueError, match="origin differs"):
+        complete_checkout_history(clone)
+    complete_checkout_history(clone, expected_origin=origin)
+    assert git_output(clone, "rev-parse", "HEAD") == head
+    verify_closed_git_binding(clone, git_objects.candidate, git_objects.reviewed, git_objects.reviewed_tree)
+    with pytest.raises(ValueError, match="Git object unavailable"):
+        verify_closed_git_binding(clone, "0" * 40, git_objects.reviewed, git_objects.reviewed_tree)
+
+
+@pytest.mark.parametrize("mutation", ["content", "path", "mode"])
+def test_production_freeze_checks_actual_path_mode_and_blobs(git_objects, mutation):
+    def production_tree(path, mode, content):
+        blob = git_objects.git("hash-object", "-w", "--stdin", input=content)
+        subtree = git_objects.git("mktree", input=f"{mode} blob {blob}\t{path}\n")
+        component = git_objects.git("mktree", input=f"040000 tree {subtree}\tcsg_plus\n")
+        return git_objects.git("mktree", input=f"040000 tree {component}\tcustom_components\n")
+
+    original_tree = production_tree("synthetic.py", "100644", "synthetic original\n")
+    reviewed = git_objects.commit(original_tree, "test(quality): create synthetic production")
+    git_objects.git("update-ref", "HEAD", reviewed)
+    verify_production_freeze(git_objects.repository, reviewed)
+    changed_tree = production_tree("renamed.py" if mutation == "path" else "synthetic.py",
+                                   "100755" if mutation == "mode" else "100644",
+                                   "synthetic changed\n" if mutation == "content" else "synthetic original\n")
+    changed = git_objects.commit(changed_tree, "test(quality): change synthetic production", reviewed)
+    git_objects.git("update-ref", "HEAD", changed)
+    with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
+        verify_production_freeze(git_objects.repository, reviewed)
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--implementation-evidence-root", type=Path)
+    arguments = parser.parse_args()
+    complete_checkout_history(REPOSITORY_PATH)
     actual = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
-    validate_residual_round_snapshot(actual)
-    result = reconcile_ledger(actual)
+    result = validate_reviewed_registration(actual)
+    if arguments.implementation_evidence_root is not None:
+        verify_implementation_evidence(actual, arguments.implementation_evidence_root)
+        result["local_implementation_evidence"] = "ALL_PRIVATE_BYTES_VERIFIED"
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))

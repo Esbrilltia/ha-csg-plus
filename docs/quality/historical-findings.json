@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "ledger_revision": "G8-residual-implemented-pending-review",
+  "ledger_revision": "FINAL-independent-review-closure-registration",
   "document_kind": "implementation-overlay-pending-independent-review",
   "baseline": {
     "commit": "18ee8ab82f22ea03ff1a1eb04b2edfb52ab3e93c",
@@ -848,17 +848,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -2234,17 +2284,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -2607,17 +2707,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -2981,17 +3131,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -3089,17 +3289,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -3176,17 +3426,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -3569,17 +3869,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -3663,17 +4013,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -3752,17 +4152,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -5375,17 +5825,67 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "previous/Beta2_Independent_Closure_Recommendations_2026-10-05.json",
+            "sha256": "9828c6c0be637e6bee93890007fcc0a1d5d26f97e6ceea77a028b332837b8e99"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -5845,17 +6345,59 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "previous/PR13_Residual_Closure_Advice_2026-10-05.json",
+            "sha256": "47c49a32e530247cf46558ba6ea0a2f083fbd2522e308980124d096cfab5e466"
+          },
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
@@ -5925,17 +6467,51 @@
         ]
       },
       "independent_review": {
-        "status": "NOT_PERFORMED",
-        "reviewer": null,
-        "reviewed_head": null,
-        "evidence": [],
-        "reviewed_tree": null
+        "status": "PASSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "reviewed_head": "46083af1c250f8e0f54c30af233f628159640b49",
+        "reviewed_tree": "03444b7b8c86209bf04f4de161bc3d69106a27c7",
+        "evidence": [
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "independent_closure": {
-        "status": "NOT_CLOSED",
-        "closed_commit": null,
-        "reviewer": null,
-        "evidence": []
+        "status": "CLOSED",
+        "reviewer": "Codex independent second-pass review Work; this session",
+        "closed_commit": "46083af1c250f8e0f54c30af233f628159640b49",
+        "evidence": [
+          {
+            "ref": "evidence/second-pass-conclusion.json",
+            "sha256": "b1df1c546c930b5286b602dca70ca5db6c6794c537182d0f2447eaf24cb55e44"
+          },
+          {
+            "ref": "evidence/scope-ledger-privacy.json",
+            "sha256": "775d34824df5e81eabb0efcdce58405d5c7c82768205801a824b45adcc98a43a"
+          },
+          {
+            "ref": "IR-B1-01_Second_Pass_Review_2026-10-06.txt",
+            "sha256": "334ee4baa09170da9a8641d23b04230e7fa614ec8814820598df322900fc0b90"
+          },
+          {
+            "ref": "evidence/end-summary.json",
+            "sha256": "b060337351a269b1120c0c620f92de2f7f5582b300f3ce096ea85f6493582342"
+          }
+        ]
       },
       "risk_acceptance": {
         "decision": null,
