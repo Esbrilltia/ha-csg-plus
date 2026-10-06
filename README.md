@@ -4,7 +4,7 @@
 
 **CSG Plus** (`ha-csg-plus`) is an independent Home Assistant custom integration
 for China Southern Power Grid electricity data. **Home Assistant domain: `csg_plus`.**
-Source version: **`3.0.0-beta.1`**.
+Source version: **`3.0.0-beta.2`**.
 
 This project builds on [orangeboyChen/ha-csg](https://github.com/orangeboyChen/ha-csg)
 and [CubicPill/china_southern_power_grid_stat](https://github.com/CubicPill/china_southern_power_grid_stat).

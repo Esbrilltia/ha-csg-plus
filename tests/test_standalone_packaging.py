@@ -25,7 +25,7 @@ def test_hacs_discovers_exactly_one_standalone_integration():
     hacs = json.loads((ROOT / "hacs.json").read_text(encoding="utf-8"))
     assert manifest["domain"] == PACKAGE.name == "csg_plus"
     assert manifest["name"] == hacs["name"] == "CSG Statistics Plus"
-    assert manifest["version"] == "3.0.0-beta.1"
+    assert manifest["version"] == "3.0.0-beta.2"
     assert manifest["codeowners"] == ["@Esbrilltia"]
     assert manifest["config_flow"] is True
     assert manifest["documentation"] == "https://github.com/Esbrilltia/ha-csg-plus/"
@@ -48,7 +48,7 @@ def test_manifest_keys_are_sorted_and_real_ha_loader_accepts_them(tmp_path):
                 **manifest, "is_built_in": False, "overwrites_built_in": False,
             }
             assert integration.domain == "csg_plus"
-            assert integration.version == "3.0.0-beta.1"
+            assert integration.version == "3.0.0-beta.2"
         finally:
             await hass.async_stop(force=True)
 
@@ -60,7 +60,7 @@ def test_packaging_preserves_locked_runtime_and_candidate_version():
     lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
     package = next(p for p in lock["package"] if p["source"] == {"virtual": "."})
     assert project["name"] == package["name"] == "ha-csg-plus"
-    assert project["version"] == package["version"] == "3.0.0-beta.1"
+    assert project["version"] == package["version"] == "3.0.0-beta.2"
     assert project["requires-python"] == ">=3.14.2,<3.15"
     assert project["dependencies"] == ["homeassistant==2026.9.3", "pycryptodome", "brotli"]
     assert (ROOT / ".python-version").read_text(encoding="utf-8").strip() == "3.14.2"

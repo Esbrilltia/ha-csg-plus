@@ -4,7 +4,7 @@
 
 **CSG Plus**（项目名 `ha-csg-plus`）是适用于中国南方电网用电数据的独立
 Home Assistant 自定义集成。**Home Assistant domain：`csg_plus`。**
-当前源码版本：**`3.0.0-beta.1`**。
+当前源码版本：**`3.0.0-beta.2`**。
 
 本项目基于 [orangeboyChen/ha-csg](https://github.com/orangeboyChen/ha-csg) 与
 [CubicPill/china_southern_power_grid_stat](https://github.com/CubicPill/china_southern_power_grid_stat)。
