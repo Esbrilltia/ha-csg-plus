@@ -355,7 +355,33 @@ def verify_production_freeze(repository: Path, reviewed: str = REVIEWED_HEAD) ->
                         "--", "custom_components/csg_plus")
     after = git_output(repository, "ls-tree", "-r", "--full-tree", "HEAD",
                        "--", "custom_components/csg_plus")
-    require(bool(before) and before == after, "production path/mode/type/blob drift")
+    message = "production path/mode/type/blob drift"
+    require(bool(before), message)
+    if before == after:
+        return
+    # Release preparation authorizes only this manifest version transition.
+    # Compare every other tree record, then the exact manifest bytes; no other
+    # metadata, mode, path, type or production change is exempted.
+    manifest_path = "custom_components/csg_plus/manifest.json"
+    before_records = dict(line.split("\t", 1)[::-1] for line in before.splitlines())
+    after_records = dict(line.split("\t", 1)[::-1] for line in after.splitlines())
+    before_manifest = before_records.pop(manifest_path, None)
+    after_manifest = after_records.pop(manifest_path, None)
+    require(before_records == after_records, message)
+    require(before_manifest is not None and after_manifest is not None, message)
+    require(before_manifest.split()[:2] == after_manifest.split()[:2] == ["100644", "blob"], message)
+    manifests = []
+    for ref in (reviewed, "HEAD"):
+        result = subprocess.run(
+            ["git", "-C", str(repository), "cat-file", "blob", f"{ref}:{manifest_path}"],
+            capture_output=True, timeout=15, check=False,
+        )
+        require(result.returncode == 0, message)
+        manifests.append(result.stdout)
+    old_version = b'"version": "3.0.0-beta.1"'
+    new_version = b'"version": "3.0.0-beta.2"'
+    require(manifests[0].count(old_version) == 1, message)
+    require(manifests[1] == manifests[0].replace(old_version, new_version, 1), message)
 
 
 def validate_reviewed_registration(ledger: dict, *, repository: Path = REPOSITORY_PATH) -> dict:
@@ -877,6 +903,51 @@ def test_production_freeze_checks_actual_path_mode_and_blobs(git_objects, mutati
     git_objects.git("update-ref", "HEAD", changed)
     with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
         verify_production_freeze(git_objects.repository, reviewed)
+
+
+@pytest.mark.parametrize("mutation", [
+    "version_only", "other_version", "other_field", "formatting", "code",
+    "mode", "missing_manifest", "renamed_manifest", "missing_code", "added_code",
+])
+def test_release_version_exception_preserves_all_other_production_bytes(git_objects, mutation):
+    original_manifest = '{"domain": "csg_plus", "version": "3.0.0-beta.1"}\n'
+
+    def production_tree(manifest, *, name="manifest.json", mode="100644", code="synthetic original\n", extra=False):
+        records = []
+        if manifest is not None:
+            blob = git_objects.git("hash-object", "-w", "--stdin", input=manifest)
+            records.append(f"{mode} blob {blob}\t{name}\n")
+        if code is not None:
+            blob = git_objects.git("hash-object", "-w", "--stdin", input=code)
+            records.append(f"100644 blob {blob}\tsynthetic.py\n")
+            if extra:
+                records.append(f"100644 blob {blob}\textra.py\n")
+        subtree = git_objects.git("mktree", input="".join(records))
+        component = git_objects.git("mktree", input=f"040000 tree {subtree}\tcsg_plus\n")
+        return git_objects.git("mktree", input=f"040000 tree {component}\tcustom_components\n")
+
+    reviewed = git_objects.commit(production_tree(original_manifest), "test(quality): freeze synthetic beta1 package")
+    manifest = original_manifest.replace("beta.1", "beta.2")
+    if mutation == "other_version":
+        manifest = manifest.replace("beta.2", "beta.3")
+    elif mutation == "other_field":
+        manifest = manifest.replace('"csg_plus"', '"other_domain"')
+    elif mutation == "formatting":
+        manifest += "\n"
+    changed_tree = production_tree(
+        None if mutation == "missing_manifest" else manifest,
+        name="renamed.json" if mutation == "renamed_manifest" else "manifest.json",
+        mode="100755" if mutation == "mode" else "100644",
+        code=None if mutation == "missing_code" else "synthetic changed\n" if mutation == "code" else "synthetic original\n",
+        extra=mutation == "added_code",
+    )
+    changed = git_objects.commit(changed_tree, "test(quality): prepare synthetic release version", reviewed)
+    git_objects.git("update-ref", "HEAD", changed)
+    if mutation == "version_only":
+        verify_production_freeze(git_objects.repository, reviewed)
+    else:
+        with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
+            verify_production_freeze(git_objects.repository, reviewed)
 
 
 if __name__ == "__main__":
