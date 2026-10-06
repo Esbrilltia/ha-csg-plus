@@ -351,37 +351,58 @@ def verify_implementation_evidence(ledger: dict, evidence_root: Path) -> None:
 
 
 def verify_production_freeze(repository: Path, reviewed: str = REVIEWED_HEAD) -> None:
-    before = git_output(repository, "ls-tree", "-r", "--full-tree", reviewed,
-                        "--", "custom_components/csg_plus")
-    after = git_output(repository, "ls-tree", "-r", "--full-tree", "HEAD",
-                       "--", "custom_components/csg_plus")
+    """Compare complete subtree objects, allowing only exact manifest version bytes."""
     message = "production path/mode/type/blob drift"
-    require(bool(before), message)
-    if before == after:
-        return
-    # Release preparation authorizes only this manifest version transition.
-    # Compare every other tree record, then the exact manifest bytes; no other
-    # metadata, mode, path, type or production change is exempted.
-    manifest_path = "custom_components/csg_plus/manifest.json"
-    before_records = dict(line.split("\t", 1)[::-1] for line in before.splitlines())
-    after_records = dict(line.split("\t", 1)[::-1] for line in after.splitlines())
-    before_manifest = before_records.pop(manifest_path, None)
-    after_manifest = after_records.pop(manifest_path, None)
-    require(before_records == after_records, message)
-    require(before_manifest is not None and after_manifest is not None, message)
-    require(before_manifest.split()[:2] == after_manifest.split()[:2] == ["100644", "blob"], message)
-    manifests = []
-    for ref in (reviewed, "HEAD"):
+
+    def read(*arguments: str, input: bytes | None = None) -> bytes:
         result = subprocess.run(
-            ["git", "-C", str(repository), "cat-file", "blob", f"{ref}:{manifest_path}"],
-            capture_output=True, timeout=15, check=False,
+            ["git", "-C", str(repository), *arguments],
+            input=input, capture_output=True, timeout=15, check=False,
         )
         require(result.returncode == 0, message)
-        manifests.append(result.stdout)
+        return result.stdout
+
+    production_path = "custom_components/csg_plus"
+    trees = []
+    for ref in (reviewed, "HEAD"):
+        records = read("ls-tree", "-z", "--full-tree", ref, "--", production_path).split(b"\0")
+        require(len(records) == 2 and records[-1] == b"", message)
+        metadata, separator, name = records[0].partition(b"\t")
+        require(separator and name == production_path.encode(), message)
+        fields = metadata.split()
+        require(len(fields) == 3 and fields[:2] == [b"040000", b"tree"], message)
+        tree = fields[2].decode("ascii")
+        read("cat-file", "tree", tree)
+        trees.append(tree)
+    if trees[0] == trees[1]:
+        return
+
+    # Nonrecursive, NUL-delimited entries retain subtree OIDs and arbitrary path
+    # bytes, including empty trees. Only the direct manifest entry may change.
+    entries = []
+    manifests = []
+    for tree in trees:
+        records = [record.partition(b"\t") for record in read("ls-tree", "-z", tree).split(b"\0") if record]
+        manifest = [metadata.split() for metadata, separator, name in records if name == b"manifest.json"]
+        require(len(manifest) == 1 and len(manifest[0]) == 3, message)
+        require(manifest[0][:2] == [b"100644", b"blob"], message)
+        entries.append(records)
+        manifests.append((manifest[0][2], read("cat-file", "blob", manifest[0][2].decode("ascii"))))
     old_version = b'"version": "3.0.0-beta.1"'
     new_version = b'"version": "3.0.0-beta.2"'
-    require(manifests[0].count(old_version) == 1, message)
-    require(manifests[1] == manifests[0].replace(old_version, new_version, 1), message)
+    require(manifests[0][1].count(old_version) == 1, message)
+    require(manifests[1][1] == manifests[0][1].replace(old_version, new_version, 1), message)
+
+    expected = bytearray()
+    for metadata, separator, name in entries[0]:
+        mode, object_type, oid = metadata.split()
+        if name == b"manifest.json":
+            oid = manifests[1][0]
+        # Git's binary tree encoding preserves entry order, modes, names and
+        # complete child objects. hash-object computes the OID without writing.
+        expected.extend(mode.lstrip(b"0") + b" " + name + b"\0" + bytes.fromhex(oid.decode("ascii")))
+    expected_oid = read("hash-object", "-t", "tree", "--stdin", input=bytes(expected)).strip().decode("ascii")
+    require(trees[1] == expected_oid, message)
 
 
 def validate_reviewed_registration(ledger: dict, *, repository: Path = REPOSITORY_PATH) -> dict:
@@ -944,6 +965,64 @@ def test_release_version_exception_preserves_all_other_production_bytes(git_obje
     changed = git_objects.commit(changed_tree, "test(quality): prepare synthetic release version", reviewed)
     git_objects.git("update-ref", "HEAD", changed)
     if mutation == "version_only":
+        verify_production_freeze(git_objects.repository, reviewed)
+    else:
+        with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
+            verify_production_freeze(git_objects.repository, reviewed)
+
+
+@pytest.mark.parametrize("mutation", [
+    "exact_version", "unchanged", "add_direct", "add_direct_unchanged",
+    "add_nested", "delete_empty", "rename_empty", "move_nested_empty", "replace_nested_empty",
+])
+def test_production_freeze_checks_real_empty_tree_topology(git_objects, mutation):
+    def tree(entries):
+        return git_objects.git("mktree", "-z", input="".join(
+            f"{mode} {kind} {oid}\t{name}\0" for name, (mode, kind, oid) in entries.items()
+        ))
+
+    def blob(content):
+        return git_objects.git("hash-object", "-w", "--stdin", input=content)
+
+    empty = tree({})
+    assert empty == "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+    original = '{"version": "3.0.0-beta.1"}\n'
+    leaf = ("100644", "blob", blob("synthetic nested source\n"))
+    nested = {"leaf.py": leaf, "old_empty": ("040000", "tree", empty)}
+    before = {"manifest.json": ("100644", "blob", blob(original)),
+              "nested": ("040000", "tree", tree(nested)),
+              "_baseline_empty": ("040000", "tree", empty)}
+
+    def production(entries):
+        component = tree({"csg_plus": ("040000", "tree", tree(entries))})
+        return tree({"custom_components": ("040000", "tree", component)})
+
+    reviewed = git_objects.commit(production(before), "test(quality): freeze real empty subtrees")
+    after = dict(before)
+    if mutation not in ("unchanged", "add_direct_unchanged"):
+        after["manifest.json"] = ("100644", "blob", blob(original.replace("beta.1", "beta.2")))
+    if mutation in ("add_direct", "add_direct_unchanged"):
+        after["_audit_empty"] = ("040000", "tree", empty)
+    elif mutation == "add_nested":
+        nested["_audit_empty"] = ("040000", "tree", empty)
+    elif mutation == "delete_empty":
+        after.pop("_baseline_empty")
+    elif mutation == "rename_empty":
+        after["_renamed_empty"] = after.pop("_baseline_empty")
+    elif mutation == "move_nested_empty":
+        after["moved_empty"] = nested.pop("old_empty")
+    elif mutation == "replace_nested_empty":
+        nested["old_empty"] = ("040000", "tree", tree({"deeper_empty": ("040000", "tree", empty)}))
+    after["nested"] = ("040000", "tree", tree(nested))
+    changed = git_objects.commit(production(after), "test(quality): exercise empty tree topology", reviewed)
+    git_objects.git("update-ref", "HEAD", changed)
+    # Every non-manifest leaf is identical: filesystem empty directories or a
+    # leaf-only comparison could not distinguish these real topology changes.
+    before_leaves, after_leaves = [git_objects.git("ls-tree", "-r", ref).splitlines() for ref in (reviewed, changed)]
+    assert [line for line in before_leaves if not line.endswith("/manifest.json")] == [
+        line for line in after_leaves if not line.endswith("/manifest.json")
+    ]
+    if mutation in ("exact_version", "unchanged"):
         verify_production_freeze(git_objects.repository, reviewed)
     else:
         with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
