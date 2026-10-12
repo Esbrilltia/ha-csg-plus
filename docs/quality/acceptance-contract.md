@@ -238,8 +238,28 @@ evidence bindings and risk decisions retain their values. Exactly 15 active
 historical source records remain NOT_CLOSED; both additional records are CLOSED.
 These are management source records, not 15 distinct new vulnerabilities.
 
-The reviewed-registration gate compares actual production path/mode/type/blob
-sets with the reviewed commit. Its test/CLI entry explicitly completes shallow
+The reviewed-registration gate uses two fixed historical evidence endpoints:
+`REVIEWED_HEAD` is the independently reviewed implementation above;
+`BETA2_RELEASE_HEAD` is `ee72ef9485e2f29c544879ac0780d8a1db7b5802`, with tree
+`be33108f83e232508daf4e032b971b10b7eceb23`, the beta.2 release boundary.
+Both must be real commits with their exact fixed trees. Implementation
+candidates must precede the reviewed commit, the reviewed commit must precede
+the release, and the release must precede the current checkout; equal endpoints
+are allowed. Missing objects, non-commits and sibling or reversed ancestry fail.
+These objects are not derived from the current HEAD, ledger, tags or release state.
+
+The complete production byte freeze checks only reviewed → fixed release:
+paths, modes, object types, blobs, nested trees and empty-tree topology must
+remain identical except for the approved exact manifest byte replacement from
+`3.0.0-beta.1` to `3.0.0-beta.2`. Release → successor checks ancestry/provenance
+continuity separately and allows later production changes. Restoring production
+in a successor cannot conceal contamination at the fixed release endpoint.
+Success means that historical registration and beta.2 release-boundary evidence
+remain valid; historical PASS/CLOSED records stay bound to the original review.
+It does not establish independent review or correctness of the current HEAD.
+Successor code needs its own PR review; historical PASS does not cover later work.
+
+The test/CLI entry explicitly completes shallow
 checkout ancestry from the approved origin without changing checkout refs; the
 object validator itself never fetches, skips or substitutes missing objects.
 CI checks the exact independent advice reference/hash identities while private
