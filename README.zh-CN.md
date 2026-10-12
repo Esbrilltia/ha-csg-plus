@@ -26,13 +26,23 @@ Home Assistant 自定义集成。**Home Assistant domain：`csg_plus`。**
 | 数据 | 来源 | 时效 |
 | --- | --- | --- |
 | 余额和欠费 | `queryUserAccountNumberSurplus` | 最新账户快照 |
-| 昨日和近期日电量 | `get_month_daily_usage_detail()` / `queryDayElectricByMPoint` | 已发布的日事实；昨日未发布则 unavailable |
-| 当前电价和阶梯 | 显式广州当前 tariff profile；阶梯使用权威当月累计电量 | 选项确认前保持未配置；峰谷时段采用 Asia/Shanghai |
+| 昨日用电量和最近发布日用电量 | `get_month_daily_usage_detail()` / `queryDayElectricByMPoint` | 已发布的日事实；昨日未发布则 unavailable |
+| 当前电价和阶梯 | 显式广州当前 tariff profile；阶梯使用权威当月累计电量 | 选项确认前保持未配置；峰谷时段采用中国标准时间（UTC+8；IANA: Asia/Shanghai） |
 | 上一结算月和年用电量及费用 | `get_year_month_stats()` / `getAnalyzeFeeDetails` | 正式账单快照；今年费用与用电量结算至上月 |
 
-日电量不是实时功率或今日累计用电量。当前 daily API 只返回 kWh，因此在没有权威
-charge 输入时，最近结算日费用和本月费用保持 unavailable。上月、今年和去年费用
-继续使用已批准的正式数据源，不反推每日费用。
+**昨日用电量**严格指中国标准时间（UTC+8；IANA: Asia/Shanghai）的上一自然日。
+如果南网尚未发布该日数据，则为 `unavailable`，不得回退到更早的最近发布日。
+**最近发布日用电量**表示南网当前已经发布的最新一个自然日的用电量；其数据日期
+可能等于昨日，也可能早于昨日。
+
+日电量不是实时功率或今日累计用电量。当前没有可靠权威逐日电费事实源，daily API
+只返回 kWh，因此**本月累计电费**和**最近结算日电费**当前可能为 `unavailable`。
+上月、今年和去年费用继续使用已批准的正式数据源；不使用当前 tariff × daily kWh
+制造权威日电费，也不把正式月账反推为每日费用。
+
+费用实体仍保留“最近结算日电费”名称，因为当前不存在已验证的官方“最近发布日
+电费”事实。未来若增加公式测算，必须采用“本月测算电费”“最近发布日测算电费”
+等明确的测算名称，并区分 estimate 与 official fact；本次不实现任何测算逻辑。
 
 ## 实体
 
@@ -40,7 +50,7 @@ charge 输入时，最近结算日费用和本月费用保持 unavailable。上�
 
 - 昨日用电量、余额和欠费。
 - 当前阶梯、剩余电量和电价。
-- 最近结算日用电量和费用。
+- 最近发布日用电量和最近结算日电费。
 - 本月、上月、今年和去年用电量及费用。
 
 查询快照使用 `measurement` 或不设置状态类。“能源累计用电量”和“已结算累计费用”
@@ -76,7 +86,8 @@ history/statistics 不会自动删除。CSG Plus 只使用 `csg_plus.history_sto
 `csg:cost_*` 也保持独立且不受影响。是否清理旧数据属于后续独立的用户操作。
 旧 ledger、插值和 correction 路径继续保持退役，Settled cost total 不是支持的费用来源。
 
-每个已发布日的真实电量（包括真实零值）在 `Asia/Shanghai` 当日零点生成一个统计点；
+每个已发布日的真实电量（包括真实零值）在中国标准时间（UTC+8；IANA: Asia/Shanghai）
+当日零点生成一个统计点；
 缺日保持缺失，不制造小时分布，因此小时图可能稀疏。月账单与对账结果不会改写日电量。
 历史修订和后来发布的缺日会在后续同步或重启时重新收敛。
 已排队的 import 会先读回确认，再与最新持久事实做最终比较。未确认 import 的所有权在
@@ -100,9 +111,10 @@ HA Energy 使用单一全局币种。如果不是 **CNY**，日电量统计仍�
 不实现货币转换。关闭或改变 tariff profile 不会改写、删除正式费用；明确关闭
 external statistics 则停止访问电量及费用统计，同时保留已有数据。
 
-CSG 事实月份定义为 **Asia/Shanghai 自然月**。只物化早于当前上海自然月的已关闭月份；
+CSG 事实月份定义为**中国标准时间（UTC+8；IANA: Asia/Shanghai）的自然月**。
+只物化早于当前中国标准时间自然月的已关闭月份；
 即使上游异常返回当前月费用，也不发布为最终结算月账。整月事实的 Recorder anchor
-固定为账单月 **15 日 12:00 Asia/Shanghai**，由 HA 转 UTC。
+固定为账单月 **15 日 12:00，中国标准时间（UTC+8；IANA: Asia/Shanghai）**，由 HA 转 UTC。
 `state` 是该月正式费用，`sum` 用 Decimal 累加所有已知月账。真实零费用有效；
 缺失、无效或尚未发布的月份不生成 row。缺月后来补账，或月账向上、向下修订时，
 从最早变化月重新物化后续累计值，不追加 delta correction，不 adjust，不 clear。
@@ -161,14 +173,15 @@ Decimal component model 为 **0.5802 × 时段比价 + 0.00866875 CNY/kWh**：�
 先分时，后阶梯：第二档在分时基础价加 **0.05**，第三档加 **0.30**；居民不实施尖峰价。
 不会把包含基金及附加的平段价直接乘峰段比价。数值累计及阈值比较使用 `Decimal(str(value))`。
 
-上海时段为谷 **00:00–08:00**，峰 **10:00–12:00、14:00–19:00**，其余为平。
+中国标准时间（UTC+8；IANA: Asia/Shanghai）时段为谷 **00:00–08:00**，
+峰 **10:00–12:00、14:00–19:00**，其余为平。
 当前单价 sensor 保留 `current_ladder_tariff` 后缀，完整身份为 `csg_plus.<account>.<suffix>`，单位为 **CNY/kWh**，
 不使用 MONETARY device class 或 TOTAL 状态类。峰谷边界从缓存电量本地刷新，不额外
 请求 daily API。仅当月初至最新 observed/published date 每天都有合法、有限、非负的
 kWh 时，才展示确定的阶梯起始日。daily client 将已出现日期但读数无效的行保留为
 date-only coverage marker，因此 invalid tail 不会缩短覆盖区间。缺日或无效读数使
 start date unavailable，但仍可用权威 `usage_total` 判断档位和剩余额度。marker 没有
-kWh，HistoryStore 不将其保存为 fact；无效昨日读数保持 unavailable，最新结算日仅从
+kWh，HistoryStore 不将其保存为 fact；无效昨日读数保持 unavailable，最近发布日用电量仅从
 有效 daily fact rows 中选择。
 
 静态政策来源：粤价〔2012〕135号（阶梯）、粤发改价格〔2017〕498号（广州价格）、
@@ -223,7 +236,7 @@ preferences，也不自动清理旧数据。
 ## 更新间隔
 
 余额、欠费、阶梯状态和昨日用电量按配置的间隔刷新，默认四小时。每日账单详情、月度汇总和年度汇总每天刷新一次。
-已配置的峰谷单价还会在上海峰谷时段边界本地刷新。
+已配置的峰谷单价还会在中国标准时间（UTC+8；IANA: Asia/Shanghai）的峰谷时段边界本地刷新。
 
 ## API 实现
 

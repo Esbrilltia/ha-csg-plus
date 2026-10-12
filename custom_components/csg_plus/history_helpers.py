@@ -56,7 +56,7 @@ def validate_history_month(month: Any) -> tuple[int, int]:
 
 
 def csg_today() -> dt.date:
-    """Return the Shanghai natural day used to bound one validation batch."""
+    """Return the China Standard Time (UTC+8) date for one validation batch."""
     return dt_util.utcnow().astimezone(_CSG_TIME_ZONE).date()
 
 

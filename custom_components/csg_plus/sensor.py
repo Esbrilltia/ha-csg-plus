@@ -203,8 +203,10 @@ class CSGSensor(CoordinatorEntity, SensorEntity):
         if self._description.suffix == SUFFIX_CURRENT_LADDER_TARIFF and isinstance(self.coordinator, CurrentCoordinator):
             profile = self.coordinator.tariff_profile(self._account)
             if profile is not None and profile.tou_enabled:
-                # Shanghai has no DST. These UTC hours are precisely local
-                # 08, 10, 12, 14, 19 and 00, regardless of HA's display zone.
+                # For supported data dates, China Standard Time uses UTC+8;
+                # Asia/Shanghai is the IANA timezone identifier. These UTC hours
+                # are precisely local 08, 10, 12, 14, 19 and 00, regardless of
+                # HA's display zone.
                 self._unsub_tariff_boundary = async_track_utc_time_change(
                     self.hass, self._handle_tariff_boundary,
                     hour=[0, 2, 4, 6, 11, 16], minute=0, second=0,

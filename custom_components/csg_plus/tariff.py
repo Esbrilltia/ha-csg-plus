@@ -134,7 +134,7 @@ def resolve_tariff_profile(area_code: str, selection: Any) -> TariffProfile | No
 
 
 def tou_period(now: dt.datetime) -> str:
-    """Return the residential period in Asia/Shanghai; there is no sharp peak."""
+    """Return the residential period in China Standard Time; no sharp peak."""
     if now.tzinfo is None:
         raise ValueError("Tariff time must be timezone aware")
     hour = now.astimezone(_CSG_TIME_ZONE).hour

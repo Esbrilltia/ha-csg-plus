@@ -29,14 +29,29 @@ The current production path uses published daily usage and official billing snap
 | Data | Source | Freshness |
 | --- | --- | --- |
 | Balance and arrears | `queryUserAccountNumberSurplus` | Latest account snapshot |
-| Yesterday and recent daily usage | `get_month_daily_usage_detail()` / `queryDayElectricByMPoint` | Published daily facts; an unpublished yesterday is unavailable |
-| Current tariff and ladder | Explicit current Guangzhou tariff profile; authoritative current-month usage for ladder | Unconfigured until confirmed in Options; TOU follows Asia/Shanghai time |
+| Yesterday usage and latest published daily usage | `get_month_daily_usage_detail()` / `queryDayElectricByMPoint` | Published daily facts; an unpublished yesterday is unavailable |
+| Current tariff and ladder | Explicit current Guangzhou tariff profile; authoritative current-month usage for ladder | Unconfigured until confirmed in Options; TOU follows China Standard Time (UTC+8; IANA: Asia/Shanghai) |
 | Previous settled month and year usage/cost | `get_year_month_stats()` / `getAnalyzeFeeDetails` | Official billing snapshots; current year is settled through the previous month |
 
-Daily usage is not live power or today's accumulated consumption. The current
-daily API returns kWh only, so latest settlement-day cost and this-month cost
-stay unavailable without an authoritative charge. Previous-month and year
-cost snapshots retain their existing official sources; no daily cost is inferred.
+**Yesterday usage** strictly means the previous calendar day in China Standard
+Time (UTC+8; IANA: Asia/Shanghai). If CSG has not published that day's data, it is
+`unavailable`; it never falls back to an earlier published day.
+**Latest published daily usage** means usage for the latest calendar day whose
+data CSG has published. Its data date may be yesterday or an earlier day.
+
+Daily usage is not live power or today's accumulated consumption. There is
+currently no reliable authoritative daily electricity-cost fact source. The
+daily API returns kWh only, so **This month cost** and **Latest settlement day
+cost** may be `unavailable`. Previous-month and year cost snapshots retain their
+existing official sources. The integration does not manufacture authoritative
+daily charges with current tariff × daily kWh or reverse-allocate official
+monthly bills into daily costs.
+
+The cost entity keeps its settlement name: there is no verified official
+latest-published-day cost fact. Any future formula-based estimate must use an
+explicit name such as **Estimated this month cost** or **Estimated latest
+published day cost**, and distinguish an estimate from an official fact. No
+estimate logic is implemented here.
 
 ## Entities
 
@@ -44,7 +59,7 @@ Each payment account provides the following sensors:
 
 - Yesterday usage, balance, and arrears.
 - Current ladder tier, remaining energy, and tariff.
-- Latest settlement-day usage and cost.
+- Latest published daily usage and latest settlement-day cost.
 - This month, last month, this year, and last year usage and cost totals.
 
 Snapshots use `measurement` or no state class. The integration no longer
@@ -88,7 +103,8 @@ interpolation and correction path remains inactive; Settled cost total is not
 a supported cost source.
 
 Statistics use each published day's actual kWh, including real zero, at midnight
-in `Asia/Shanghai`. Missing days stay absent. There is one daily aggregate point,
+in China Standard Time (UTC+8; IANA: Asia/Shanghai). Missing days stay absent.
+There is one daily aggregate point,
 without invented hourly distribution; hourly charts may therefore look sparse.
 Monthly bills and reconciliation never alter these daily statistics. Historical
 revisions and newly published missing days converge on later syncs or restart.
@@ -118,10 +134,11 @@ from durable facts. There is no currency conversion. Changing or disabling a
 tariff profile does not change or delete official costs. Disabling external
 statistics stops both energy and cost access while retaining their history.
 
-CSG bill months are natural calendar months in **Asia/Shanghai**. Only months
-before the current Shanghai month are materialized, even if the upstream API
-sends a current-month bill. Each whole-month fact is anchored at **12:00
-Asia/Shanghai on its 15th day**, then HA converts it to UTC. `state`
+CSG bill months are calendar months in **China Standard Time (UTC+8;
+IANA: Asia/Shanghai)**. Only months before the current calendar month in China
+Standard Time are materialized, even if the upstream API sends a current-month
+bill. Each whole-month fact is anchored at **12:00 on its 15th day in China
+Standard Time (UTC+8; IANA: Asia/Shanghai)**, then HA converts it to UTC. `state`
 is that month's official cost; `sum` accumulates known bills using Decimal.
 Real zero is valid. Missing, invalid or unpublished months have no row. Filling
 a hole or revising a bill, including a downward revision, rebuilds the cumulative
@@ -195,7 +212,8 @@ in tier 3 after the time-of-use rate; residential users have no sharp-peak rate.
 The inclusive flat price is never multiplied by a peak ratio. All calculations
 and threshold comparisons use `Decimal(str(value))`.
 
-Asia/Shanghai periods are valley **00:00–08:00**, peak **10:00–12:00** and
+China Standard Time (UTC+8; IANA: Asia/Shanghai) periods are valley
+**00:00–08:00**, peak **10:00–12:00** and
 **14:00–19:00**, flat otherwise. The current tariff sensor keeps its original
 `current_ladder_tariff` suffix under `csg_plus.<account>.<suffix>` and reports **CNY/kWh**, without a monetary
 device class or total state class. TOU boundaries update locally from cached
@@ -206,7 +224,7 @@ as date-only coverage markers, so an invalid tail cannot shorten that interval.
 Holes or invalid readings leave the start date unavailable while the
 authoritative total still determines tier and remaining allowance. Markers have
 no kWh: HistoryStore does not save them as facts, invalid yesterday remains
-unavailable, and latest settlement selects only valid daily fact rows.
+unavailable, and latest published daily usage selects only valid daily fact rows.
 
 Static policy sources are 粤价〔2012〕135号 (ladder), 粤发改价格〔2017〕498号
 (Guangzhou prices), 粤发改价格函〔2021〕826号 and 粤发改价格函〔2023〕553号
@@ -268,7 +286,8 @@ writes Energy preferences or automatically cleans up old data.
 Balance, arrears, ladder state, and yesterday usage refresh at the configured
 interval (four hours by default). Daily billing details, monthly summaries, and
 yearly summaries refresh once per day.
-Configured TOU prices also refresh at their Shanghai time boundaries.
+Configured TOU prices also refresh at their China Standard Time (UTC+8;
+IANA: Asia/Shanghai) boundaries.
 
 ## Historical fact backfill
 
@@ -280,7 +299,8 @@ backfill; existing facts and progress are retained. Upgrades do not enable it
 automatically.
 
 Each entry load starts one background pass through the previous calendar month
-in `Asia/Shanghai`. Daily usage is requested by month and official bills by year,
+in China Standard Time (UTC+8; IANA: Asia/Shanghai). Daily usage is requested by
+month and official bills by year,
 sequentially, with independent progress for each account and lane. Confirmed
 units are skipped after restart or reload; failed units are retried on the next
 load. Extending the range fetches new units, including newly covered months

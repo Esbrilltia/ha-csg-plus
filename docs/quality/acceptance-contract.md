@@ -16,7 +16,7 @@ authoritative Energy history comes from separate external statistics.
 
 | Translation key | Suffix | Source / purpose | Device class | Native unit | State class |
 | --- | --- | --- | --- | --- | --- |
-| yesterday_usage | yesterday_kwh | Published daily usage for strictly Shanghai yesterday | energy | kWh | none |
+| yesterday_usage | yesterday_kwh | Published daily usage for strictly the previous China Standard Time (UTC+8) calendar day | energy | kWh | none |
 | balance | balance | Current account balance; signed | monetary | CNY | none |
 | arrears | arrears | Current account arrears | monetary | CNY | none |
 | current_ladder | current_ladder | Profile-derived current tier | none | none | none |
@@ -52,7 +52,7 @@ Both clean-database and synthetic beta.1-to-candidate observations are required.
 | Monthly daily response | Mapping with `result` list and `totalPower` field | Invalid response/container raises a safe typed validation error; an empty list is valid |
 | `totalPower`, `totalBillingElectricity` | Finite nonnegative numeric value or missing | Missing/invalid total is unavailable, never a manufactured zero; valid independent rows survive |
 | Daily `power` / normalized `kwh` | Finite nonnegative numeric value; boolean excluded | Invalid numeric row retains its valid date marker for coverage; it is not a fact |
-| Daily date | Valid ISO calendar date in the requested month, no later than the Shanghai day captured for validation | Out-of-request and future dates are rejected before display or fact publication |
+| Daily date | Valid ISO calendar date in the requested month, no later than the China Standard Time date captured for validation | Out-of-request and future dates are rejected before display or fact publication |
 | Monthly bill response | Mapping with `electricAndChargeList` list | Invalid batch is distinguished from an empty list; other accounts/years remain independent |
 | Monthly bill key | API YYYYMM or YYYY-MM, valid calendar month in requested year | Malformed/wrong-year rows cannot update facts or closed-month snapshots |
 | Monthly bill usage | Finite nonnegative; missing field preserves existing fact field | Same-response conflicts reject the whole affected month; other months survive |
@@ -61,8 +61,9 @@ Both clean-database and synthetic beta.1-to-candidate observations are required.
 | Account balance / arrears | Finite signed monetary observation, boolean excluded | Do not apply daily-usage nonnegativity to money mechanically; missing field is unavailable |
 | All conversions | Reject NaN, infinity, booleans and conversion overflow | No broad exception-to-zero fallback; errors omit payload/account/token values |
 
-Requests and business dates use Asia/Shanghai. Future means after today's
-Shanghai natural date, not after yesterday. Existing published-day semantics,
+Requests and business dates use China Standard Time (UTC+8; IANA: Asia/Shanghai).
+Future means after today's China Standard Time calendar date, not after yesterday.
+Existing published-day semantics,
 yesterday identity and coverage completeness are retained. Midnight, month/year
 boundaries, leap dates, request scope and explicit markers require tests.
 
@@ -92,7 +93,7 @@ B observations: IR-B1-03 and IR-B1-01. They are separate from the original
 IR-B1-03 distinguishes ingress from retained state. Compatible V1 files may
 already contain future daily facts. Store retains those dates, values and file
 bytes/mtime. The Bridge's authoritative energy materialization boundary includes
-only dates no later than the current Asia/Shanghai natural day, including today
+only dates no later than the current China Standard Time calendar day, including today
 and legitimate zero. Each pass re-evaluates eligibility; the date's arrival makes
 the retained fact eligible normally. Safe diagnosis is bounded per Bridge
 instance and omits identifiers and values. Native temporary Store/Recorder
@@ -182,13 +183,13 @@ introduced. The concrete compatible choice and behavior evidence are recorded
 before G4 production changes.
 
 The compatible G4 choice keeps storage V1 and adds optional `freshness` to each
-comparison: `state`, Shanghai `checked_business_date`, and `facts_signature`.
+comparison: `state`, China Standard Time `checked_business_date`, and `facts_signature`.
 The deterministic SHA256 binds sorted daily dates/values and the independent
 monthly usage/cost values, excluding account identifiers, source and timestamps.
 An actual daily or monthly revision marks an existing comparison stale before
 saving. Reversal remains stale until explicit reconciliation; missing/invalid or
 same-value refetch does not invalidate or recalculate. Legacy incomplete bindings
-are unknown; a changed fact signature or Shanghai business date is stale. An
+are unknown; a changed fact signature or China Standard Time business date is stale. An
 exact same-date verified reload can remain current. Getters return detached views
 and do not save or rewrite comparison timestamps.
 
