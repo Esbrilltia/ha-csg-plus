@@ -1243,8 +1243,9 @@ def test_release_binding_rejects_wrong_objects_trees_and_ancestry(git_objects, m
         sibling = objects.commit(objects.ledger_tree, "test(quality): create sibling checkout", objects.reviewed)
         objects.git("update-ref", "HEAD", sibling)
     else:
-        objects.git("symbolic-ref", "HEAD", "refs/synthetic/noncommit")
-        objects.git("update-ref", "HEAD", objects.ledger_tree)
+        # Git versions may reject non-commit HEAD writes through update-ref.
+        # Deliberately corrupt only this isolated fixture's detached HEAD.
+        (objects.repository / ".git" / "HEAD").write_text(objects.ledger_tree + "\n", encoding="ascii")
     with pytest.raises(ValueError, match=message):
         verify_release_git_binding(objects.repository)
 
