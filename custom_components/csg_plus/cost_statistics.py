@@ -42,8 +42,9 @@ def build_cost_statistics(
 ) -> list[StatisticData]:
     """Anchor whole-month facts mid-month; holes stay unknown, revisions rebuild.
 
-    Shanghai's 15th at noon remains in the fact's calendar month across IANA
-    offsets. It is a Recorder materialization point, not a daily charge date.
+    The 15th at noon in China Standard Time (IANA: Asia/Shanghai) remains in
+    the fact's calendar month across IANA offsets. It is a Recorder
+    materialization point, not a daily charge date.
     """
     bills = []
     current_month = today.replace(day=1)

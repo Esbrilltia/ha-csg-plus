@@ -63,6 +63,9 @@ REPOSITORY_PATH = LEDGER_PATH.parents[2]
 # Only reference/hash identities are public; private audit payloads stay outside Git.
 REVIEWED_HEAD = "46083af1c250f8e0f54c30af233f628159640b49"
 REVIEWED_TREE = "03444b7b8c86209bf04f4de161bc3d69106a27c7"
+# Fixed historical release evidence, independent of tags, refs and ledger fields.
+BETA2_RELEASE_HEAD = "ee72ef9485e2f29c544879ac0780d8a1db7b5802"
+BETA2_RELEASE_TREE = "be33108f83e232508daf4e032b971b10b7eceb23"
 IMPLEMENTATION_SNAPSHOT_HASH = "40470e368751136f401c7fc8776e799731187560e28448b34dbdf3d6cabf6da2"
 REGISTRATION_REVIEWER = "Codex independent second-pass review Work; this session"
 APPROVED_HISTORICAL_CLOSURES = frozenset(
@@ -350,7 +353,36 @@ def verify_implementation_evidence(ledger: dict, evidence_root: Path) -> None:
                     "implementation evidence byte hash drift")
 
 
-def verify_production_freeze(repository: Path, reviewed: str = REVIEWED_HEAD) -> None:
+def verify_release_git_binding(repository: Path) -> dict:
+    """Validate historical endpoints and checkout provenance, not successor review."""
+    current_head = git_output(repository, "rev-parse", "--verify", "HEAD")
+    for commit, role in ((REVIEWED_HEAD, "reviewed"),
+                         (BETA2_RELEASE_HEAD, "release"), (current_head, "checkout HEAD")):
+        require(git_output(repository, "cat-file", "-t", commit) == "commit",
+                f"historical {role} object is not a commit")
+    for commit, expected_tree, role in ((REVIEWED_HEAD, REVIEWED_TREE, "reviewed"),
+                                       (BETA2_RELEASE_HEAD, BETA2_RELEASE_TREE, "release")):
+        require(git_output(repository, "rev-parse", "--verify", f"{commit}^{{tree}}") == expected_tree,
+                f"historical {role} tree does not match actual Git tree")
+    for ancestor, descendant, message in (
+        (REVIEWED_HEAD, BETA2_RELEASE_HEAD, "reviewed HEAD is not an ancestor of beta2 release"),
+        (BETA2_RELEASE_HEAD, current_head, "beta2 release is not an ancestor of ledger checkout"),
+    ):
+        result = subprocess.run(
+            ["git", "-C", str(repository), "merge-base", "--is-ancestor", ancestor, descendant],
+            capture_output=True, text=True, timeout=15, check=False,
+        )
+        require(result.returncode in (0, 1), "historical Git ancestry unavailable; provide required history")
+        require(result.returncode == 0, message)
+    return {
+        "reviewed_head": REVIEWED_HEAD, "reviewed_tree": REVIEWED_TREE,
+        "release_head": BETA2_RELEASE_HEAD, "release_tree": BETA2_RELEASE_TREE,
+        "checkout_head": current_head,
+        "scope": "historical registration and beta2 release evidence; successor ancestry only",
+    }
+
+
+def verify_production_freeze(repository: Path, reviewed: str, target: str) -> None:
     """Compare complete subtree objects, allowing only exact manifest version bytes."""
     message = "production path/mode/type/blob drift"
 
@@ -364,7 +396,7 @@ def verify_production_freeze(repository: Path, reviewed: str = REVIEWED_HEAD) ->
 
     production_path = "custom_components/csg_plus"
     trees = []
-    for ref in (reviewed, "HEAD"):
+    for ref in (reviewed, target):
         records = read("ls-tree", "-z", "--full-tree", ref, "--", production_path).split(b"\0")
         require(len(records) == 2 and records[-1] == b"", message)
         metadata, separator, name = records[0].partition(b"\t")
@@ -450,7 +482,9 @@ def validate_reviewed_registration(ledger: dict, *, repository: Path = REPOSITOR
             "registration historical remaining set must be exactly fifteen")
     require(remaining["additional_not_closed_count"] == 0,
             "registration additional remaining must be zero")
-    verify_production_freeze(repository)
+    historical_binding = verify_release_git_binding(repository)
+    verify_production_freeze(repository, REVIEWED_HEAD, BETA2_RELEASE_HEAD)
+    report["historical_release_gate"] = historical_binding
     return report
 
 
@@ -905,25 +939,27 @@ def test_history_origin_allows_only_the_fixed_repository_and_checkout_url():
             verify_history_origin(other, expected)
 
 
-@pytest.mark.parametrize("mutation", ["content", "path", "mode"])
+@pytest.mark.parametrize("mutation", ["content", "path", "mode", "type"])
 def test_production_freeze_checks_actual_path_mode_and_blobs(git_objects, mutation):
     def production_tree(path, mode, content):
-        blob = git_objects.git("hash-object", "-w", "--stdin", input=content)
-        subtree = git_objects.git("mktree", input=f"{mode} blob {blob}\t{path}\n")
+        kind = "tree" if mode == "040000" else "blob"
+        oid = (git_objects.git("mktree", input="") if kind == "tree" else
+               git_objects.git("hash-object", "-w", "--stdin", input=content))
+        subtree = git_objects.git("mktree", input=f"{mode} {kind} {oid}\t{path}\n")
         component = git_objects.git("mktree", input=f"040000 tree {subtree}\tcsg_plus\n")
         return git_objects.git("mktree", input=f"040000 tree {component}\tcustom_components\n")
 
     original_tree = production_tree("synthetic.py", "100644", "synthetic original\n")
     reviewed = git_objects.commit(original_tree, "test(quality): create synthetic production")
     git_objects.git("update-ref", "HEAD", reviewed)
-    verify_production_freeze(git_objects.repository, reviewed)
+    verify_production_freeze(git_objects.repository, reviewed, reviewed)
     changed_tree = production_tree("renamed.py" if mutation == "path" else "synthetic.py",
-                                   "100755" if mutation == "mode" else "100644",
+                                   "040000" if mutation == "type" else "100755" if mutation == "mode" else "100644",
                                    "synthetic changed\n" if mutation == "content" else "synthetic original\n")
     changed = git_objects.commit(changed_tree, "test(quality): change synthetic production", reviewed)
     git_objects.git("update-ref", "HEAD", changed)
     with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
-        verify_production_freeze(git_objects.repository, reviewed)
+        verify_production_freeze(git_objects.repository, reviewed, changed)
 
 
 @pytest.mark.parametrize("mutation", [
@@ -965,10 +1001,10 @@ def test_release_version_exception_preserves_all_other_production_bytes(git_obje
     changed = git_objects.commit(changed_tree, "test(quality): prepare synthetic release version", reviewed)
     git_objects.git("update-ref", "HEAD", changed)
     if mutation == "version_only":
-        verify_production_freeze(git_objects.repository, reviewed)
+        verify_production_freeze(git_objects.repository, reviewed, changed)
     else:
         with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
-            verify_production_freeze(git_objects.repository, reviewed)
+            verify_production_freeze(git_objects.repository, reviewed, changed)
 
 
 @pytest.mark.parametrize("mutation", [
@@ -1023,10 +1059,195 @@ def test_production_freeze_checks_real_empty_tree_topology(git_objects, mutation
         line for line in after_leaves if not line.endswith("/manifest.json")
     ]
     if mutation in ("exact_version", "unchanged"):
-        verify_production_freeze(git_objects.repository, reviewed)
+        verify_production_freeze(git_objects.repository, reviewed, changed)
     else:
         with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
-            verify_production_freeze(git_objects.repository, reviewed)
+            verify_production_freeze(git_objects.repository, reviewed, changed)
+
+
+@pytest.fixture
+def release_objects(git_objects, monkeypatch):
+    """Import historical objects locally; isolate all synthetic release mutations."""
+    objects = git_objects
+    objects.git("fetch", "--quiet", "--no-tags", str(REPOSITORY_PATH), BETA2_RELEASE_HEAD)
+    release_tree = BETA2_RELEASE_TREE
+
+    def entries(tree):
+        result = {}
+        for record in objects.git("ls-tree", "-z", tree).split("\0"):
+            if record:
+                metadata, name = record.split("\t", 1)
+                result[name] = tuple(metadata.split())
+        return result
+
+    def tree(rows):
+        return objects.git("mktree", "-z", input="".join(
+            f"{mode} {kind} {oid}\t{name}\0" for name, (mode, kind, oid) in rows.items()
+        ))
+
+    root = entries(release_tree)
+    components = entries(root["custom_components"][2])
+    production = entries(components["csg_plus"][2])
+
+    def production_root(rows, *, component=None):
+        changed_components = dict(components)
+        changed_components["csg_plus"] = component or ("040000", "tree", tree(rows))
+        changed_root = dict(root)
+        changed_root["custom_components"] = ("040000", "tree", tree(changed_components))
+        return tree(changed_root)
+
+    def blob(content):
+        return objects.git("hash-object", "-w", "--stdin", input=content)
+
+    release = objects.commit(release_tree, "test(quality): create fixed synthetic release", REVIEWED_HEAD)
+    monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", release)
+    monkeypatch.setitem(globals(), "BETA2_RELEASE_TREE", release_tree)
+    objects.git("update-ref", "HEAD", release)
+    return SimpleNamespace(objects=objects, release=release, release_tree=release_tree,
+                           production=production, production_root=production_root,
+                           tree=tree, entries=entries, blob=blob)
+
+
+@pytest.mark.parametrize("checkout", ["release", "successor", "reviewed_release"])
+def test_historical_registration_allows_successors_without_extending_review(
+    registered_ledger, release_objects, monkeypatch, checkout,
+):
+    world = release_objects
+    before = deepcopy(registered_ledger)
+    if checkout == "successor":
+        production = dict(world.production)
+        production["sensor.py"] = ("100644", "blob", world.blob("synthetic later production\n"))
+        successor = world.objects.commit(world.production_root(production),
+                                         "test(quality): change successor production", world.release)
+        world.objects.git("update-ref", "HEAD", successor)
+        # Prove the successor really differs and would fail a release byte freeze.
+        with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
+            verify_production_freeze(world.objects.repository, REVIEWED_HEAD, successor)
+    elif checkout == "reviewed_release":
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", REVIEWED_HEAD)
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_TREE", REVIEWED_TREE)
+        world.objects.git("update-ref", "HEAD", REVIEWED_HEAD)
+    report = validate_reviewed_registration(registered_ledger, repository=world.objects.repository)
+    assert registered_ledger == before
+    assert set(report["remaining_risk"]["finding_ids"]) == EXPECTED_REMAINING
+    binding = report["historical_release_gate"]
+    assert binding["release_head"] == BETA2_RELEASE_HEAD
+    assert binding["checkout_head"] == world.objects.git("rev-parse", "HEAD")
+    for row in registered_ledger["findings"] + registered_ledger["additional_findings"]:
+        if row["finding_id"] in APPROVED_CLOSURES:
+            assert row["independent_review"]["reviewed_head"] == REVIEWED_HEAD
+            assert row["independent_review"]["reviewed_tree"] == REVIEWED_TREE
+            assert row["independent_closure"]["closed_commit"] == REVIEWED_HEAD
+            if checkout == "successor":
+                assert row["independent_review"]["reviewed_head"] != successor
+
+
+@pytest.mark.parametrize("mutation", [
+    "code", "path", "mode", "type", "component_type", "manifest_version",
+    "manifest_field", "manifest_formatting", "empty_tree", "nested_empty_tree",
+    "restored_successor",
+])
+def test_registration_rejects_contaminated_release_even_when_successor_restores_it(
+    registered_ledger, release_objects, monkeypatch, mutation,
+):
+    world = release_objects
+    production = dict(world.production)
+    component = None
+    if mutation in ("code", "restored_successor"):
+        production["sensor.py"] = ("100644", "blob", world.blob("synthetic release contamination\n"))
+    elif mutation == "path":
+        production["renamed_sensor.py"] = production.pop("sensor.py")
+    elif mutation == "mode":
+        production["sensor.py"] = ("100755", *production["sensor.py"][1:])
+    elif mutation == "type":
+        production["sensor.py"] = ("040000", "tree", world.tree({}))
+    elif mutation == "component_type":
+        component = ("100644", "blob", world.blob("synthetic component blob\n"))
+    elif mutation.startswith("manifest_"):
+        manifest = world.objects.git("show", f"{world.release}:custom_components/csg_plus/manifest.json") + "\n"
+        if mutation == "manifest_version":
+            manifest = manifest.replace("3.0.0-beta.2", "3.0.0-beta.3")
+        elif mutation == "manifest_field":
+            manifest = manifest.replace('"domain": "csg_plus"', '"domain": "other_domain"')
+        else:
+            manifest += "\n"
+        production["manifest.json"] = ("100644", "blob", world.blob(manifest))
+    elif mutation == "empty_tree":
+        production["_synthetic_empty"] = ("040000", "tree", world.tree({}))
+    else:
+        nested = world.entries(production["translations"][2])
+        nested["_synthetic_empty"] = ("040000", "tree", world.tree({}))
+        production["translations"] = ("040000", "tree", world.tree(nested))
+    contaminated_tree = world.production_root(production, component=component)
+    contaminated = world.objects.commit(contaminated_tree,
+                                        "test(quality): contaminate release endpoint", REVIEWED_HEAD)
+    monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", contaminated)
+    monkeypatch.setitem(globals(), "BETA2_RELEASE_TREE", contaminated_tree)
+    successor = world.objects.commit(world.release_tree,
+                                     "test(quality): restore production after release", contaminated)
+    world.objects.git("update-ref", "HEAD", successor)
+    verify_release_git_binding(world.objects.repository)
+    # The restored checkout passes byte comparison, but the historical release fails.
+    verify_production_freeze(world.objects.repository, REVIEWED_HEAD, successor)
+    with pytest.raises(ValueError, match="production path/mode/type/blob drift"):
+        validate_reviewed_registration(registered_ledger, repository=world.objects.repository)
+
+
+@pytest.mark.parametrize("mutation,message", [
+    ("missing_release", "Git object unavailable"),
+    ("release_tree_object", "release object is not a commit"),
+    ("release_blob_object", "release object is not a commit"),
+    ("wrong_release_tree", "release tree does not match"),
+    ("wrong_reviewed_tree", "reviewed tree does not match"),
+    ("missing_reviewed", "Git object unavailable"),
+    ("reviewed_tree_object", "reviewed object is not a commit"),
+    ("same_tree_sibling_release", "reviewed HEAD is not an ancestor"),
+    ("reversed_release", "reviewed HEAD is not an ancestor"),
+    ("checkout_before_release", "beta2 release is not an ancestor"),
+    ("same_tree_sibling_checkout", "beta2 release is not an ancestor"),
+    ("noncommit_checkout", "checkout HEAD object is not a commit"),
+])
+def test_release_binding_rejects_wrong_objects_trees_and_ancestry(git_objects, monkeypatch, mutation, message):
+    objects = git_objects
+    release = objects.commit(objects.reviewed_tree, "test(quality): create release endpoint", objects.reviewed)
+    successor = objects.commit(objects.ledger_tree, "test(quality): create successor endpoint", release)
+    objects.git("update-ref", "HEAD", successor)
+    monkeypatch.setitem(globals(), "REVIEWED_HEAD", objects.reviewed)
+    monkeypatch.setitem(globals(), "REVIEWED_TREE", objects.reviewed_tree)
+    monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", release)
+    monkeypatch.setitem(globals(), "BETA2_RELEASE_TREE", objects.reviewed_tree)
+    verify_release_git_binding(objects.repository)
+    if mutation == "missing_release":
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", "0" * 40)
+    elif mutation == "release_tree_object":
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", objects.reviewed_tree)
+    elif mutation == "release_blob_object":
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", objects.git("hash-object", "-w", "--stdin", input="synthetic blob"))
+    elif mutation == "wrong_release_tree":
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_TREE", objects.ledger_tree)
+    elif mutation == "wrong_reviewed_tree":
+        monkeypatch.setitem(globals(), "REVIEWED_TREE", objects.candidate_tree)
+    elif mutation == "missing_reviewed":
+        monkeypatch.setitem(globals(), "REVIEWED_HEAD", "0" * 40)
+    elif mutation == "reviewed_tree_object":
+        monkeypatch.setitem(globals(), "REVIEWED_HEAD", objects.reviewed_tree)
+    elif mutation == "same_tree_sibling_release":
+        sibling = objects.commit(objects.reviewed_tree, "test(quality): create sibling release", objects.candidate)
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", sibling)
+    elif mutation == "reversed_release":
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_HEAD", objects.candidate)
+        monkeypatch.setitem(globals(), "BETA2_RELEASE_TREE", objects.candidate_tree)
+    elif mutation == "checkout_before_release":
+        objects.git("update-ref", "HEAD", objects.reviewed)
+    elif mutation == "same_tree_sibling_checkout":
+        sibling = objects.commit(objects.ledger_tree, "test(quality): create sibling checkout", objects.reviewed)
+        objects.git("update-ref", "HEAD", sibling)
+    else:
+        # Git versions may reject non-commit HEAD writes through update-ref.
+        # Deliberately corrupt only this isolated fixture's detached HEAD.
+        (objects.repository / ".git" / "HEAD").write_text(objects.ledger_tree + "\n", encoding="ascii")
+    with pytest.raises(ValueError, match=message):
+        verify_release_git_binding(objects.repository)
 
 
 if __name__ == "__main__":

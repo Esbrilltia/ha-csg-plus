@@ -374,7 +374,8 @@ class EnergyStatisticsBridge:
                         if len(eligible) != len(facts) and not self._retained_future_warned:
                             self._retained_future_warned = True
                             _LOGGER.warning(
-                                "Retained daily facts future relative to Asia/Shanghai business day "
+                                "Retained daily facts future relative to the China Standard Time "
+                                "business date (IANA: Asia/Shanghai) "
                                 "are excluded from statistics materialization",
                             )
                         desired = build_statistics(eligible)

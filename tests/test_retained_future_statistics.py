@@ -78,7 +78,7 @@ def test_fresh_reload_and_date_advance_preserve_legacy_file(
             for _ in range(3):
                 await world.sync()
             warnings = [r.getMessage() for r in caplog.records
-                        if "future relative to Asia/Shanghai business day" in r.getMessage()]
+                        if "future relative to the China Standard Time business date (IANA: Asia/Shanghai)" in r.getMessage()]
             assert len(warnings) == 1
             assert not any(value in warnings[0] for value in (ACCOUNT, "2026-09-30", "9.0"))
 

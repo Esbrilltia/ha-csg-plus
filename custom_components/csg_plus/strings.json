@@ -7,7 +7,7 @@
       "current_ladder": {"name": "{account} Current ladder"},
       "current_ladder_remaining": {"name": "{account} Current ladder remaining energy"},
       "current_ladder_tariff": {"name": "{account} Current tariff"},
-      "latest_settlement_usage": {"name": "{account} Latest settlement day usage"},
+      "latest_settlement_usage": {"name": "{account} Latest published daily usage"},
       "latest_settlement_cost": {"name": "{account} Latest settlement day cost"},
       "this_month_usage": {"name": "{account} This month usage"},
       "this_month_cost": {"name": "{account} This month cost"},
